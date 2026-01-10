@@ -1,0 +1,6 @@
+<materials version="3">
+	<material name="mat_metal" render_template="generic:DEPTH_SCALING:DIFFUSE_TEXTURE:NORMALMAP" version="2">
+		<bump_normal_texture 	file="units/payday2/weapons/wpn_fps_taser_hooks/taser_hooks_nm"/>
+		<diffuse_texture 		file="units/payday2/weapons/wpn_fps_taser_hooks/taser_hooks_df"/>
+	</material>
+</materials>

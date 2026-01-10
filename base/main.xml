@@ -1,0 +1,66 @@
+<table name="Interaction Animations" author="Javgarag">
+	<AddFiles directory="assets">
+		<!-- Animations -->
+		<animation path="anims/fps/interacts/keycard_insert" load="true"/>
+		<animation path="anims/fps/interacts/grab" load="true"/>
+		
+		<animation path="anims/fps/interacts/fix_drill/fix_drill_enter" load="true"/>
+		<animation path="anims/fps/interacts/fix_drill/fix_drill_loop" load="true"/>
+		<animation path="anims/fps/interacts/fix_drill/fix_drill_exit" load="true"/>
+		
+		<animation path="anims/fps/interacts/answer_radio/answer_radio_enter" load="true"/>
+		<animation path="anims/fps/interacts/answer_radio/answer_radio_loop" load="true"/>
+		<animation path="anims/fps/interacts/answer_radio/answer_radio_exit" load="true"/>
+		
+		<animation path="anims/fps/interacts/lockpick/lockpick_enter" load="true"/>
+		<animation path="anims/fps/interacts/lockpick/lockpick_loop" load="true"/>
+		<animation path="anims/fps/interacts/lockpick/lockpick_exit" load="true"/>
+		
+		<animation path="anims/fps/interacts/caustic_soda/caustic_soda_enter" load="true"/>
+		<animation path="anims/fps/interacts/caustic_soda/caustic_soda_loop" load="true"/>
+		<animation path="anims/fps/interacts/caustic_soda/caustic_soda_exit" load="true"/>
+		
+		<!-- Units -->
+		<add from_db="true" path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard" type="unit">
+			<unit path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard"/>
+			<object path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard"/>
+			<unit path="units/payday2/characters/civ_acc_keycard_clipped/civ_acc_keycard_clipped"/>
+			<object path="units/payday2/characters/civ_acc_keycard_clipped/civ_acc_keycard_clipped"/>
+			<sequence_manager path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard"/>
+		</add>
+		<add from_db="true" path="units/pd2_dlc_glace/props/glc_prop_construction_tool/glc_prop_contruction_tool_wrench01" type="unit">
+			<material_config path="units/pd2_dlc_glace/props/glc_prop_construction_tool/glc_prop_contruction_tool_wrench01"/>
+			<object path="units/pd2_dlc_glace/props/glc_prop_construction_tool/glc_prop_contruction_tool_wrench01"/>
+			<unit path="units/pd2_dlc_glace/props/glc_prop_construction_tool/glc_prop_contruction_tool_wrench01"/>
+		</add>
+		<add path="mods/int_anim/units/fps_interact_radio/fps_interact_radio" type="unit">
+			<material_config path="mods/int_anim/material_configs/fps_interact_radio"/>
+			<model path="mods/int_anim/units/fps_interact_radio/fps_interact_radio"/>
+			<object path="mods/int_anim/units/fps_interact_radio/fps_interact_radio"/>
+			<unit path="mods/int_anim/units/fps_interact_radio/fps_interact_radio"/>
+		</add>
+		<add from_db="true" path="units/payday2/pickups/gen_pku_methlab_caustic_soda/gen_pku_methlab_caustic_soda" type="unit">
+			<unit path="units/payday2/pickups/gen_pku_methlab_caustic_soda/gen_pku_methlab_caustic_soda"/>
+			<object path="units/payday2/pickups/gen_pku_methlab_caustic_soda/gen_pku_methlab_caustic_soda"/>
+			<material_config path="units/payday2/pickups/gen_pku_methlab_caustic_soda/gen_pku_methlab_caustic_soda"/>
+			<sequence_manager path="units/payday2/pickups/gen_pku_methlab_caustic_soda/gen_pku_methlab_caustic_soda"/>
+		</add>
+		<add path="mods/int_anim/units/fps_lockpick/fps_lockpick" type="unit">
+			<unit path="mods/int_anim/units/fps_lockpick/fps_lockpick"/>
+			<model path="mods/int_anim/units/fps_lockpick/fps_lockpick"/>
+			<object path="mods/int_anim/units/fps_lockpick/fps_lockpick"/>
+			<material_config path="mods/int_anim/material_configs/fps_lockpick"/>
+		</add>
+		<add path="mods/int_anim/units/fps_tension_tool/fps_tension_tool" type="unit">
+			<unit path="mods/int_anim/units/fps_tension_tool/fps_tension_tool"/>
+			<model path="mods/int_anim/units/fps_tension_tool/fps_tension_tool"/>
+			<object path="mods/int_anim/units/fps_tension_tool/fps_tension_tool"/>
+			<material_config path="mods/int_anim/material_configs/fps_lockpick"/>
+		</add>
+		
+		<!-- Depth scaling material configs -->
+		<material_config path="mods/int_anim/material_configs/gen_pku_keycard"/>
+		<material_config path="mods/int_anim/material_configs/glc_prop_contruction_tool_wrench01"/>
+		<material_config path="mods/int_anim/material_configs/gen_pku_methlab_caustic_soda"/>
+	</AddFiles>
+</table>

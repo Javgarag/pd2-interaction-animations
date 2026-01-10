@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<tweaks>
+	<tweak version="2" name="anims/fps/fps" extension="animation_def">
+		<search>
+			<xml/>
+		</search>
+
+		<target>
+			<blend_set name="offhand" animatable_set="fps">
+				<blend alias="all" weight="1"/>
+				<blend alias="right_finger" weight="0"/>
+				<blend alias="right_arm" weight="0"/>
+				<blend name="a_weapon_right" weight="0"/>
+			</blend_set>
+		</target>
+	</tweak>
+</tweaks>

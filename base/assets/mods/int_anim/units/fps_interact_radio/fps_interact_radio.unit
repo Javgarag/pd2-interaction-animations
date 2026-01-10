@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<unit type="gen" slot="1">
+	<object file="mods/int_anim/units/fps_interact_radio/fps_interact_radio" />
+</unit>

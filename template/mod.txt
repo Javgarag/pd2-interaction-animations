@@ -1,0 +1,14 @@
+{
+	"name" : "Interaction Animation Template",
+	"author" : "",
+	"contact" : "",
+	"version" : "1.0.0",
+	"blt_version" : 2,
+	"priority" : 500
+	"hooks" : [
+		{
+			"hook_id" : "lib/tweak_data/interactiontweakdata",
+			"script_path" : "interaction_animation_tweak_data.lua"
+		}
+	]
+}

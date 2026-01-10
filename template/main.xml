@@ -1,0 +1,23 @@
+<table name="Interaction Animation Template" author="">
+	<AddFiles directory="assets">
+		<!-- Instant interactions -->
+		<animation path="anims/fps/interacts/keycard_insert" load="true"/>
+		
+		<!-- Long interactions -->
+		<animation path="anims/fps/interacts/fix_drill/fix_drill_enter" load="true"/>
+		<animation path="anims/fps/interacts/fix_drill/fix_drill_loop" load="true"/>
+		<animation path="anims/fps/interacts/fix_drill/fix_drill_exit" load="true"/>
+		
+		<!-- Units -->
+		<add from_db="true" path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard" type="unit">
+			<unit path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard"/>
+			<object path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard"/>
+			<unit path="units/payday2/characters/civ_acc_keycard_clipped/civ_acc_keycard_clipped"/>
+			<object path="units/payday2/characters/civ_acc_keycard_clipped/civ_acc_keycard_clipped"/>
+			<sequence_manager path="units/payday2/pickups/gen_pku_keycard/gen_pku_keycard"/>
+		</add>
+		
+		<!-- Depth scaling material configs -->
+		<material_config path="mods/int_anim/material_configs/gen_pku_keycard"/>
+	</AddFiles>
+</table>

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<tweak version="2" name="anims/fps/fps_spawn" extension="animation_subset">
+    <search>
+        <xml/>
+    </search>
+
+    <target>
+		<!-- OFFHAND -->
+        <anim name="insert_keycard" file="anims/fps/interacts/keycard_insert" blend_set="offhand"/> <!-- Note the use of the "offhand" blend set -->
+		
+		<!-- LONGS -->
+		<anim name="fix_drill_enter" file="anims/fps/interacts/fix_drill/fix_drill_enter" blend_set="all"/>
+		<anim name="fix_drill_loop" file="anims/fps/interacts/fix_drill/fix_drill_loop" blend_set="all"/>
+		<anim name="fix_drill_exit" file="anims/fps/interacts/fix_drill/fix_drill_exit" blend_set="all"/>
+    </target>
+</tweak>

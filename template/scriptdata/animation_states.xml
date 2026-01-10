@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<tweaks>
+	<!-- SECTION #1 -->
+	<tweak version="2" name="anims/fps/fps_spawn" extension="animation_states">
+		<search>
+			<xml/>
+			<state name="fps"/>
+		</search>
+
+		<target>
+			<!-- LONGS -->
+			<to name="fix_drill" redirect="fps/interact_enter/fix_drill"/>
+			
+			<!-- OFFHANDS -->
+			<to name="insert_keycard" redirect="fps/offhand/interact/insert_keycard"/>
+		</target>
+	</tweak>
+	
+	<tweak version="2" name="anims/fps/fps_spawn" extension="animation_states">
+		<search>
+			<xml/>
+		</search>
+
+		<target>
+			<!-- SECTION #2 -->
+			<!-- Timed interactions begin with these animations. They should then transition seamlessly to fps/interact_hold animations.-->
+			<state name="fps/interact_enter/fix_drill" type="once" segment="base" speed="1.0"> 
+				<anim name="fix_drill_enter"/>	
+				<exit name="fps/interact_hold/fix_drill"/>
+			</state>
+		
+			<!-- SECTION #3 -->
+			<state name="fps/interact_hold/fix_drill" type="loop" segment="base" speed="1.0"> 	
+				<to name="interact_exit" redirect="fps/interact_exit/fix_drill"/>
+				<to name="interact_interupt" redirect="fps/interact_interupt/fix_drill"/>	
+			
+				<anim name="fix_drill_loop"/>
+			</state>
+			
+			<!-- SECTION #4 -->
+			<!-- When the interactions are close to finishing, this state will play. -->
+			<state name="fps/interact_exit/fix_drill" type="once" segment="base" speed="1.0"> 
+				<anim name="fix_drill_exit"/>
+			</state>
+			
+			<!-- SECTION #5 -->
+			<!-- If timed interactions are interupted (meaning fps/interaction_hold should be stopped prematurely,
+				 such as when cancelling or playing with bots and their reduced interaction time), exit animations 
+				 will play at a higher speed, then the gun will be equipped as per vanilla gameplay. 
+			-->
+			<state name="fps/interact_interupt/fix_drill" type="once" segment="base" speed="2.0"> 
+				<anim name="fix_drill_exit"/>
+			</state>
+			
+			<!-- SECTION #6 -->
+			<state name="fps/offhand/interact/insert_keycard" type="once" segment="base" speed="1.0"> 
+				<default blend="10" blend_out="3"/>
+				<anim name="insert_keycard"/>				
+			</state>
+		</target>
+	</tweak>
+</tweaks>

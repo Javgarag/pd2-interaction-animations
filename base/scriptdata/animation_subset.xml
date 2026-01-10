@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<tweak version="2" name="anims/fps/fps_spawn" extension="animation_subset">
+    <search>
+        <xml/>
+    </search>
+
+    <target>
+        <anim name="insert_keycard" file="anims/fps/interacts/keycard_insert" blend_set="offhand"/>
+		<anim name="grab" file="anims/fps/interacts/grab" blend_set="offhand"/>
+		
+		<anim name="fix_drill_enter" file="anims/fps/interacts/fix_drill/fix_drill_enter" blend_set="all"/>
+		<anim name="fix_drill_loop" file="anims/fps/interacts/fix_drill/fix_drill_loop" blend_set="all"/>
+		<anim name="fix_drill_exit" file="anims/fps/interacts/fix_drill/fix_drill_exit" blend_set="all"/>
+		
+		<anim name="answer_radio_enter" file="anims/fps/interacts/answer_radio/answer_radio_enter" blend_set="all"/>
+		<anim name="answer_radio_loop" file="anims/fps/interacts/answer_radio/answer_radio_loop" blend_set="all"/>
+		<anim name="answer_radio_exit" file="anims/fps/interacts/answer_radio/answer_radio_exit" blend_set="all"/>
+		
+		<anim name="lockpick_enter" file="anims/fps/interacts/lockpick/lockpick_enter" blend_set="all"/>
+		<anim name="lockpick_loop" file="anims/fps/interacts/lockpick/lockpick_loop" blend_set="all"/>
+		<anim name="lockpick_exit" file="anims/fps/interacts/lockpick/lockpick_exit" blend_set="all"/>
+    </target>
+</tweak>

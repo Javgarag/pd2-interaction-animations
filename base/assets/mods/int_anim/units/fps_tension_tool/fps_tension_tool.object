@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<dynamic_object>
+	<diesel materials="mods/int_anim/material_configs/fps_lockpick" orientation_object="rp_fps_tension_tool" />
+	<graphics>
+        <object name="g_tension" enabled="true" />
+    </graphics>
+</dynamic_object>

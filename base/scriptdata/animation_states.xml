@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<tweaks>
+	<tweak version="2" name="anims/fps/fps_spawn" extension="animation_states">
+		<search>
+			<xml/>
+			<state name="fps"/>
+		</search>
+
+		<target>
+			<to name="fix_drill" redirect="fps/interact_enter/fix_drill"/>
+			<to name="answer_radio" redirect="fps/interact_enter/answer_radio"/>
+			<to name="lockpick" redirect="fps/interact_enter/lockpick"/>
+			
+			<!-- OFFHANDS -->
+			<to name="grab" redirect="fps/offhand/interact/grab"/>
+			<to name="insert_keycard" redirect="fps/offhand/interact/insert_keycard"/>
+		</target>
+	</tweak>
+	
+	<tweak version="2" name="anims/fps/fps_spawn" extension="animation_states">
+		<search>
+			<xml/>
+			<state name="fps/idle"/>
+		</search>
+
+		<target>
+			<from_group name="fps/offhand" blend="2" />
+		</target>
+	</tweak>
+	
+	<tweak version="2" name="anims/fps/fps_spawn" extension="animation_states">
+		<search>
+			<xml/>
+		</search>
+
+		<target>
+			<!-- Timed interactions begin with these animations. They should then transition seamlessly to fps/interact_hold animations.-->
+			<state name="fps/interact_enter" type="template_state" segment="base" speed="1.0"> 
+				<keys>
+					<key at="trigger" trigger="foley_flap_heavy_equipment" callback="play_sound" class_name="base" param1="foley_flap_heavy_equipment"/>
+					<key at="trigger" trigger="wp_foley_generic_back_in_hand" callback="play_sound" class_name="base" param1="wp_foley_generic_back_in_hand"/>
+					<key at="trigger" trigger="wp_foley_generic_tilt" callback="play_sound" class_name="base" param1="wp_foley_generic_tilt"/>
+				
+					<key at="enter" callback="spawn_interaction_items" class_name="base"/>
+				</keys>
+			</state>
+			
+			<state name="fps/interact_enter/fix_drill" type="once" segment="base" speed="1.0"> 
+				<anim name="fix_drill_enter"/>	
+				<exit name="fps/interact_hold/fix_drill"/>
+			</state>
+			
+			<state name="fps/interact_enter/answer_radio" type="once" segment="base" speed="1.0"> 
+				<anim name="answer_radio_enter"/>	
+				<exit name="fps/interact_hold/answer_radio"/>
+			</state>
+			
+			<state name="fps/interact_enter/lockpick" type="once" segment="base" speed="1.0"> 
+				<anim name="lockpick_enter"/>	
+				<exit name="fps/interact_hold/lockpick"/>
+			</state>
+			
+			<!-- Animations that play for as long as the interaction. -->
+			<state name="fps/interact_hold" type="template_state" segment="base" speed="1.0"> 
+				<from_group name="fps/interact_enter" blend="5"/>
+				<default blend="0"/>
+				
+				<keys>
+					<key at="enter" callback="anim_clbk_interact_hold_enter" class_name="base"/>
+					<key at="loop" callback="anim_clbk_interact_hold_loop" class_name="base"/>
+					<key at="exit" callback="anim_clbk_interact_hold_exit" class_name="base"/>
+				</keys>
+			</state>
+			
+			<state name="fps/interact_hold/fix_drill" type="loop" segment="base" speed="1.0"> 	
+				<to name="interact_exit" redirect="fps/interact_exit/fix_drill"/>
+				<to name="interact_interupt" redirect="fps/interact_interupt/fix_drill"/>	
+			
+				<anim name="fix_drill_loop"/>
+			</state>
+			
+			<state name="fps/interact_hold/answer_radio" type="loop" segment="base" speed="1.0"> 
+				<to name="interact_exit" redirect="fps/interact_exit/answer_radio"/>
+				<to name="interact_interupt" redirect="fps/interact_interupt/answer_radio"/>	
+				
+				<anim name="answer_radio_loop"/>
+			</state>
+			
+			<state name="fps/interact_hold/lockpick" type="loop" segment="base" speed="1.0"> 
+				<to name="interact_exit" redirect="fps/interact_exit/lockpick"/>
+				<to name="interact_interupt" redirect="fps/interact_interupt/lockpick"/>	
+				
+				<anim name="lockpick_loop"/>
+			</state>
+			
+			<!-- When the interactions are close to finishing, this state will play. -->
+			<state name="fps/interact_exit" type="template_state" segment="base" speed="1.0">
+				<from_group name="fps/interact_hold" blend="5"/>
+				<default blend="5"/>
+				
+				<keys>
+					<key at="trigger" trigger="wp_foley_generic_tilt" callback="play_sound" class_name="base" param1="wp_foley_generic_tilt"/>
+					<key at="exit" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
+				</keys>
+			</state>
+			
+			<state name="fps/interact_exit/fix_drill" type="once" segment="base" speed="1.0"> 
+				<anim name="fix_drill_exit"/>
+			</state>
+			
+			<state name="fps/interact_exit/answer_radio" type="once" segment="base" speed="1.0"> 
+				<anim name="answer_radio_exit"/>
+			</state>
+			
+			<state name="fps/interact_exit/lockpick" type="once" segment="base" speed="1.0"> 
+				<anim name="lockpick_exit"/>
+			</state>
+			
+			<!-- If timed interactions are interupted (meaning fps/interaction_hold should be stopped prematurely,
+					 such as when cancelling or playing with bots and their reduced interaction time), exit animations 
+					 will play at a higher speed, then the gun will be equipped as per vanilla gameplay. 
+				-->
+			<state name="fps/interact_interupt" type="template_state" segment="base" speed="2.0"> 
+				<from_group name="fps/interact_hold" blend="5"/>
+				<default blend="5"/>
+				
+				<keys>
+					<key at="trigger" trigger="wp_foley_generic_tilt" callback="play_sound" class_name="base" param1="wp_foley_generic_tilt"/>
+					
+					<key at="enter" callback="anim_clbk_interact_interupt_enter" class_name="base"/>
+					<key at="exit" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
+					<key at="exit" callback="anim_clbk_interact_interupt_exit" class_name="base"/>
+					<key at="exit" callback="anim_clbk_play_weapon_anim" class_name="base" param1="equip"/>
+				</keys>
+				
+				<exit name="fps/equip"/>
+			</state>
+			
+			<state name="fps/interact_interupt/fix_drill" type="once" segment="base" speed="2.0"> 
+				<anim name="fix_drill_exit"/>
+			</state>
+			
+			<state name="fps/interact_interupt/answer_radio" type="once" segment="base" speed="2.0"> 
+				<anim name="answer_radio_exit"/>
+			</state>
+			
+			<state name="fps/interact_interupt/lockpick" type="once" segment="base" speed="2.0"> 
+				<anim name="lockpick_exit"/>
+			</state>
+			
+			<!-- OFFHAND -->
+			
+			<!-- Interactions with no timers (loose loot, pickups, etc) consist of a single animation, preferably as
+					 short as possible, that can be cancelled by running, shooting, meleeing, etc.
+			-->
+			<state name="fps/offhand/interact" type="template_state" segment="base">
+				<default blend="2"/>			
+
+				<keys>
+					<key at="enter" callback="spawn_interaction_items" class_name="base"/>
+					<key at="exit" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
+					<key at="exit" callback="anim_clbk_offhand_exit" class_name="base"/>
+				</keys>
+				
+				<exit name="fps/idle"/>
+			</state>
+			
+			<state name="fps/offhand/interact/grab" type="once" segment="base" speed="1.0"> 
+				<default blend="3" blend_out="3"/>
+				<anim name="grab"/>	
+			</state>
+			
+			<state name="fps/offhand/interact/insert_keycard" type="once" segment="base" speed="1.0"> 
+				<default blend="10" blend_out="3"/>
+				<anim name="insert_keycard"/>				
+			</state>
+		</target>
+	</tweak>
+</tweaks>
