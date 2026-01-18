@@ -1,6 +1,9 @@
 <table name="Interaction Animations" author="Javgarag">
+	<Package file="scriptdata/intanims.package" id="packages/intanim" unload_on_restart="true"/>
 	<AddFiles directory="assets">
 		<!-- Animations -->
+		<animation path="anims/fps/ik/right/test" load="true"/>
+		
 		<animation path="anims/fps/interacts/keycard_insert" load="true"/>
 		<animation path="anims/fps/interacts/grab" load="true"/>
 		

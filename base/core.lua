@@ -1,3 +1,5 @@
+PackageManager:load("packages/intanim")
+
 if RequiredScript == "lib/units/beings/player/states/playerstandard" then
 	Hooks:PostHook(PlayerStandard, "_update_check_actions", "int_anim_update_check_interacting", function(self, t, dt, paused)
 		self:_update_unequip_interaction_timers(t)
@@ -28,8 +30,14 @@ end
 UnitBase = UnitBase or class()
 PlayerMovementState = PlayerMovementState or class()
 
+--[[
+	PlayerStandard._ext_camera = PlayerCamera object
+	PlayerStandard._ext_camera:camera_unit() = FPCameraPlayerBase object
+]]--
 PlayerStandard = PlayerStandard or class(PlayerMovementState)
+
 FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
+PlayerCamera = PlayerCamera or class()
 
 -- Instant interactions
 function PlayerStandard:_play_interact_redirect(t)
@@ -48,7 +56,8 @@ function PlayerStandard:_play_interact_redirect(t)
 		return
 	end
 
-	self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	self._ext_camera:play_ik_redirect("tester")
+	--self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
 end
 
 -- Timed interactions (hard overwrite)
@@ -207,6 +216,110 @@ function FPCameraPlayerBase:_update_rot(axis, unscaled_axis)
 	mrotation.multiply(final_rot, interact_arm_offset_rot, arm_rot)
 
 	self:set_rotation(final_rot)
+end
+
+-- IK Controller
+local ids_left_ik_modifier_name = Idstring("left_arm_ik")
+local ids_right_ik_modifier_name = Idstring("right_arm_ik")
+
+local orig_spawn_camera_unit = PlayerCamera.spawn_camera_unit
+function PlayerCamera:spawn_camera_unit()
+	self._ik = World:spawn_unit(Idstring("mods/int_anim/units/fps_ik_controller/fps_ik_controller"), self._m_cam_pos, self._m_cam_rot)
+	self._ik_machine = self._ik:anim_state_machine()
+	self._unit:link(self._ik)
+
+	orig_spawn_camera_unit(self)
+
+	self._camera_unit:base():set_ik_unit(self._ik)
+end
+
+function PlayerCamera:play_ik_redirect(redirect_name)
+	if self._ik and alive(self._ik) then
+		log("[PlayerCamera:play_ik_redirect] Playing IK redirect: " .. redirect_name)
+		local ids_redirect_name = Idstring(redirect_name)
+		local result = self._ik:play_redirect(ids_redirect_name)
+		if result ~= PlayerCamera.IDS_NOTHING then
+			self._ik_animation = ids_redirect_name
+			self._camera_unit:base():start_ik()
+		end
+	end
+end
+
+local orig_update_player_camera = PlayerCamera.update
+function PlayerCamera:update(unit, t, dt)
+	if self._ik_machine and self._camera_unit and alive(self._camera_unit) and self._ik_animation then
+		if not self._ik:anim_data().playing then
+			self._ik_animation = nil
+			self._camera_unit:base():stop_ik()
+			log("Stopped IK animation")
+			return
+		end
+
+		self._last_ik_t = self._last_ik_t or t 
+		if t - self._last_ik_t > .005 then
+			self._last_ik_t = t
+			self._camera_unit:base():update_ik()
+		end
+	end
+
+	orig_update_player_camera(self, unit, t, dt)
+end
+
+function FPCameraPlayerBase:set_ik_unit(ik_unit)
+	self._ik = ik_unit
+
+	self._left_ik_modifier = self._unit:anim_state_machine():get_modifier(ids_left_ik_modifier_name)
+	self._right_ik_modifier = self._unit:anim_state_machine():get_modifier(ids_right_ik_modifier_name)
+end
+
+function FPCameraPlayerBase:start_ik()
+	--self._unit:anim_state_machine():force_modifier(ids_left_ik_modifier_name)
+	self._unit:anim_state_machine():force_modifier(ids_right_ik_modifier_name)
+	
+	self:play_redirect(Idstring("idle")) -- modifiers don't work in an empty state
+end
+
+function FPCameraPlayerBase:update_ik()
+	if not self._ik or not alive(self._ik) then
+		return
+	end
+
+	local left_locator = self._ik:get_object(Idstring("ik_left"))
+	local right_locator = self._ik:get_object(Idstring("ik_right"))
+
+	--self._left_ik_modifier:set_target_position(left_locator:local_position())
+	--self._left_ik_modifier:set_target_rotation(left_locator:local_rotation())
+
+	local right_pos = Vector3()
+	mvector3.add(right_pos, right_locator:local_position())
+	mvector3.rotate_with(right_pos, self._unit:rotation())
+	mvector3.add(right_pos, self._unit:position())
+	self._right_ik_modifier:set_target_position(right_pos)
+
+	local right_rot = Rotation()
+	mrotation.multiply(right_rot, self._unit:rotation()) -- order matters here as its rot multiplication
+	mrotation.multiply(right_rot, right_locator:local_rotation())
+	self._right_ik_modifier:set_target_rotation(right_rot)
+
+	Application:draw_sphere(right_pos, 20, 1, 1, 1)
+end
+
+function FPCameraPlayerBase:stop_ik()
+	if not self._ik or not alive(self._ik) then
+		return
+	end
+
+	log("Forbidding IK modifiers")
+	self._unit:anim_state_machine():forbid_modifier(ids_right_ik_modifier_name)
+	self._unit:anim_state_machine():forbid_modifier(ids_left_ik_modifier_name)
+end
+
+-- Avoid going into the empty state or else the IK won't work
+local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
+function FPCameraPlayerBase:anim_clbk_idle_full_blend()
+	if not self._ik:anim_data().playing then	
+		orig_anim_clbk_idle_full_blend(self)
+	end
 end
 
 -- Animation callbacks
