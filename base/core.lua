@@ -56,8 +56,10 @@ function PlayerStandard:_play_interact_redirect(t)
 		return
 	end
 
-	self._ext_camera:play_ik_redirect("tester")
-	--self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	if self._interaction_anim.offhand_animation then
+		self._ext_camera:play_ik_redirect(self._interaction_anim.offhand_animation.name or "", self._interaction_anim.offhand_animation.speed or 1)
+	end
 end
 
 -- Timed interactions (hard overwrite)
@@ -233,14 +235,14 @@ function PlayerCamera:spawn_camera_unit()
 	self._camera_unit:base():set_ik_unit(self._ik)
 end
 
-function PlayerCamera:play_ik_redirect(redirect_name)
+function PlayerCamera:play_ik_redirect(redirect_name, speed_multiplier)
 	if self._ik and alive(self._ik) then
-		log("[PlayerCamera:play_ik_redirect] Playing IK redirect: " .. redirect_name)
 		local ids_redirect_name = Idstring(redirect_name)
 		local result = self._ik:play_redirect(ids_redirect_name)
 		if result ~= PlayerCamera.IDS_NOTHING then
 			self._ik_animation = ids_redirect_name
-			self._camera_unit:base():start_ik()
+			self._ik_machine:set_speed(result, speed_multiplier or 1)
+			self._camera_unit:base():start_ik(self._ik:anim_data().left or false, self._ik:anim_data().right or false)
 		end
 	end
 end
@@ -248,17 +250,16 @@ end
 local orig_update_player_camera = PlayerCamera.update
 function PlayerCamera:update(unit, t, dt)
 	if self._ik_machine and self._camera_unit and alive(self._camera_unit) and self._ik_animation then
-		if not self._ik:anim_data().playing then
+		if not self._ik:anim_data().playing and not self._camera_unit:base():interaction_anim() then
 			self._ik_animation = nil
 			self._camera_unit:base():stop_ik()
-			log("Stopped IK animation")
 			return
 		end
 
 		self._last_ik_t = self._last_ik_t or t 
 		if t - self._last_ik_t > .005 then
 			self._last_ik_t = t
-			self._camera_unit:base():update_ik()
+			self._camera_unit:base():update_ik(self._ik:anim_data().right and "right" or "left") -- "right" takes priority
 		end
 	end
 
@@ -268,40 +269,80 @@ end
 function FPCameraPlayerBase:set_ik_unit(ik_unit)
 	self._ik = ik_unit
 
-	self._left_ik_modifier = self._unit:anim_state_machine():get_modifier(ids_left_ik_modifier_name)
-	self._right_ik_modifier = self._unit:anim_state_machine():get_modifier(ids_right_ik_modifier_name)
+	self._ik_modifiers = {
+		left = self._unit:anim_state_machine():get_modifier(ids_left_ik_modifier_name),
+		right = self._unit:anim_state_machine():get_modifier(ids_right_ik_modifier_name)
+	}
 end
 
-function FPCameraPlayerBase:start_ik()
-	--self._unit:anim_state_machine():force_modifier(ids_left_ik_modifier_name)
-	self._unit:anim_state_machine():force_modifier(ids_right_ik_modifier_name)
-	
-	self:play_redirect(Idstring("idle")) -- modifiers don't work in an empty state
+function FPCameraPlayerBase:start_ik(start_left, start_right)
+	if start_left then
+		self._unit:anim_state_machine():force_modifier(ids_left_ik_modifier_name)
+	end
+
+	if start_right then
+		self._unit:anim_state_machine():force_modifier(ids_right_ik_modifier_name)
+	end
 end
 
-function FPCameraPlayerBase:update_ik()
-	if not self._ik or not alive(self._ik) then
+-- arm = "left" or "right"
+function FPCameraPlayerBase:update_ik(arm)
+	local locator = self._ik:get_object(Idstring("ik_" .. arm))
+	if not self._ik or not alive(self._ik) or not locator then
 		return
 	end
 
-	local left_locator = self._ik:get_object(Idstring("ik_left"))
-	local right_locator = self._ik:get_object(Idstring("ik_right"))
+	local pos = Vector3()
+	mvector3.add(pos, locator:local_position())
+	mvector3.rotate_with(pos, self._unit:rotation())
+	mvector3.add(pos, self._unit:position())
 
-	--self._left_ik_modifier:set_target_position(left_locator:local_position())
-	--self._left_ik_modifier:set_target_rotation(left_locator:local_rotation())
+	local rot = Rotation()
+	mrotation.multiply(rot, self._unit:rotation())
+	mrotation.multiply(rot, locator:local_rotation())
 
-	local right_pos = Vector3()
-	mvector3.add(right_pos, right_locator:local_position())
-	mvector3.rotate_with(right_pos, self._unit:rotation())
-	mvector3.add(right_pos, self._unit:position())
-	self._right_ik_modifier:set_target_position(right_pos)
+	self:_update_ik_align(arm)
 
-	local right_rot = Rotation()
-	mrotation.multiply(right_rot, self._unit:rotation()) -- order matters here as its rot multiplication
-	mrotation.multiply(right_rot, right_locator:local_rotation())
-	self._right_ik_modifier:set_target_rotation(right_rot)
+	if not self._ik_modifiers[arm] then
+		log("[FPCameraPlayerBase:update_ik] Invalid arm for IK update: " .. tostring(arm))
+	end
 
-	Application:draw_sphere(right_pos, 20, 1, 1, 1)
+	self._ik_modifiers[arm]:set_target_position(pos)
+	self._ik_modifiers[arm]:set_target_rotation(rot)
+	--Application:draw_sphere(pos, 5, 1, 0, 0)
+end
+
+local pos = Vector3()
+local rot = Rotation()
+-- weapon is not parented to the hands so manually move it
+-- sadly this method does not allow for making the weapon spin with the anim 
+function FPCameraPlayerBase:_update_ik_align(arm)
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	local align_obj = self._unit:get_object(Idstring("a_weapon_" .. arm))
+	local hand = self._unit:get_object(Idstring((arm == "right" and "Right" or "Left") .. "Hand"))
+
+	if not self._ik_align_offsets then
+		self._ik_align_offsets = {
+			pos = align_obj:position() - hand:position(),
+			rot = hand:rotation():inverse() * align_obj:rotation()
+		}
+
+		mvector3.rotate_with(self._ik_align_offsets.pos, hand:rotation():inverse())
+	end
+
+	mvector3.set_zero(pos)
+	mvector3.add(pos, self._ik_align_offsets.pos)
+	mvector3.rotate_with(pos, hand:rotation())
+	mvector3.add(pos, hand:position())
+
+	mrotation.set_zero(rot)
+	mrotation.multiply(rot, hand:rotation())
+	mrotation.multiply(rot, self._ik_align_offsets.rot)
+
+	weap_unit:set_position(pos)
+	weap_unit:set_rotation(rot)
+
+	--Application:draw_sphere(pos, 5, 0, 1, 0)
 end
 
 function FPCameraPlayerBase:stop_ik()
@@ -309,12 +350,13 @@ function FPCameraPlayerBase:stop_ik()
 		return
 	end
 
-	log("Forbidding IK modifiers")
 	self._unit:anim_state_machine():forbid_modifier(ids_right_ik_modifier_name)
 	self._unit:anim_state_machine():forbid_modifier(ids_left_ik_modifier_name)
+
+	self._ik_align_offsets = nil
 end
 
--- Avoid going into the empty state or else the IK won't work
+-- Avoid going into the empty state while doing IK or else it won't work
 local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
 function FPCameraPlayerBase:anim_clbk_idle_full_blend()
 	if not self._ik:anim_data().playing then	

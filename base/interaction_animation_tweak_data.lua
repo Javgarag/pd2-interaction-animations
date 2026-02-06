@@ -3,6 +3,10 @@ InteractionTweakData = InteractionTweakData or class()
 local animations = {
 	insert_gensec_keycard = {
 		animation_state_machine_name = "insert_keycard",
+		offhand_animation = {
+			name = "tester",
+			speed = 1
+		},
 		units = {
 			{
 				unit_path = "units/payday2/pickups/gen_pku_keycard/gen_pku_keycard",  -- For per-object rigging, see FPCameraPlayerBase:spawn_melee_item
@@ -15,7 +19,11 @@ local animations = {
 		}
 	},
 	grab = {
-		animation_state_machine_name = "grab"
+		animation_state_machine_name = "grab",
+		offhand_animation = {
+			name = "tester",
+			speed = 1
+		}
 	},
 	fix_drill = {
 		animation_state_machine_name = "fix_drill",

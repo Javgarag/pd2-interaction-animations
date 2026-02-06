@@ -6,12 +6,15 @@
 	<state name="std/empty" type="emptyloop" segment="all">
 	</state>
 	
-	<state name="std/testing" type="once" segment="all">
+	<state name="std/testing" type="mix" segment="all">
 		<anim name="tester"/>
 		
 		<keys>
+			<key at="enter" set_extension="anim_data" extension_key="right" extension_value="true"/>
 			<key at="enter" set_extension="anim_data" extension_key="playing" extension_value="true"/>
+			
 			<key at="exit" set_extension="anim_data" extension_key="playing" extension_value="false"/>
+			<key at="exit" set_extension="anim_data" extension_key="right" extension_value="false"/>
 		</keys>
 		
 		<exit name="std/empty"/>
