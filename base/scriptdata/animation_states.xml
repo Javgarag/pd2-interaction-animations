@@ -171,7 +171,7 @@
 			</state>
 			
 			<state name="fps/offhand/interact/insert_keycard" type="once" segment="base" speed="1.0"> 
-				<default blend="10" blend_out="3"/>
+				<default blend="3" blend_out="3"/>
 				<anim name="insert_keycard"/>				
 			</state>
 		</target>

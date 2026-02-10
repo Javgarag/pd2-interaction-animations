@@ -36,7 +36,7 @@ function PlayerCamera:update(unit, t, dt)
 		end
 
 		self._last_ik_t = self._last_ik_t or t 
-		if t - self._last_ik_t > .005 then
+		if t - self._last_ik_t > 10^-3 then
 			self._last_ik_t = t
 			self._camera_unit:base():update_ik(self._ik:anim_data().right and "right" or "left") -- "right" takes priority
 		end

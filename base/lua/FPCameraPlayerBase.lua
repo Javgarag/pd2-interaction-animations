@@ -139,13 +139,16 @@ function FPCameraPlayerBase:stop_ik()
 	self._unit:anim_state_machine():forbid_modifier(ids_right_ik_modifier_name)
 	self._unit:anim_state_machine():forbid_modifier(ids_left_ik_modifier_name)
 
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	self._unit:link(Idstring("RightHand"), weap_unit)
+
 	self._ik_align_offsets = nil
 end
 
 -- Avoid going into the empty state while doing IK or else it won't work
 local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
 function FPCameraPlayerBase:anim_clbk_idle_full_blend()
-	if not self._ik:anim_data().playing then	
+	if not self._ik:anim_data().playing and not self._interaction_anim then	
 		orig_anim_clbk_idle_full_blend(self)
 	end
 end
