@@ -24,7 +24,7 @@
 		</search>
 
 		<target>
-			<from_group name="fps/offhand" blend="2" />
+			<from_group name="fps/offhand" blend="1" />
 		</target>
 	</tweak>
 	
@@ -154,7 +154,7 @@
 					 short as possible, that can be cancelled by running, shooting, meleeing, etc.
 			-->
 			<state name="fps/offhand/interact" type="template_state" segment="base">
-				<default blend="2"/>			
+				<default blend="1"/>			
 
 				<keys>
 					<key at="enter" callback="spawn_interaction_items" class_name="base"/>
@@ -166,13 +166,15 @@
 			</state>
 			
 			<state name="fps/offhand/interact/grab" type="once" segment="base" speed="1.0"> 
-				<default blend="3" blend_out="3"/>
 				<anim name="grab"/>	
 			</state>
 			
 			<state name="fps/offhand/interact/insert_keycard" type="once" segment="base" speed="1.0"> 
-				<default blend="3" blend_out="3"/>
-				<anim name="insert_keycard"/>				
+				<anim name="insert_keycard"/>		
+				
+				<keys>
+					<key at="trigger" trigger="keycard_despawn" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
+				</keys>				
 			</state>
 		</target>
 	</tweak>

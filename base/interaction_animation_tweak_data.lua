@@ -5,7 +5,7 @@ local animations = {
 		animation_state_machine_name = "insert_keycard",
 		offhand_animation = {
 			name = "tester",
-			speed = 1
+			speed = 1.3
 		},
 		units = {
 			{

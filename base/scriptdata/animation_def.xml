@@ -6,24 +6,14 @@
 		</search>
 
 		<target>
-			<modifier name="right_arm_ik" type="ik" animatable_set="fps" iterations="10" blend_in="1" blend_out="0.1">
+			<modifier name="right_arm_ik" type="ik" animatable_set="fps" iterations="1" blend_in="0.05" blend_out="0.25">
 				<rotation type="script"/>
 				<position type="script"/>
 				<target name="RightHand"/>
 				<bone name="RightHand" rotate="0.1" translate="0" />
 				<bone name="RightForeArm" rotate="0.75" translate="0" />
-				<bone name="RightArm" rotate="1" translate="0.9" />
-				<bone name="RightShoulder" rotate="1" translate="1" />
-			</modifier>
-			
-			<modifier name="left_arm_ik" type="ik" animatable_set="fps" iterations="1">
-				<rotation type="script"/>
-				<position type="script"/>
-				<target name="LeftHand"/>
-				<bone name="LeftHand" rotate="1" translate="1"/>
-				<bone name="LeftForeArm" rotate="1" translate="1"/>
-				<bone name="LeftArm" rotate="1" translate="1"/>
-				<bone name="LeftShoulder" rotate="1" translate="1"/>
+				<bone name="RightArm" rotate="0.4" translate="0" />
+				<bone name="RightShoulder" rotate="0.5" translate="0.1" />
 			</modifier>
 			
 			<blend_set name="offhand" animatable_set="fps">

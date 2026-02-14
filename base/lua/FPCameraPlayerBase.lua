@@ -3,7 +3,6 @@ dofile(ModPath .. "lua/PlayerCamera.lua")
 UnitBase = UnitBase or class()
 FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
 
-local ids_left_ik_modifier_name = Idstring("left_arm_ik")
 local ids_right_ik_modifier_name = Idstring("right_arm_ik")
 
 function FPCameraPlayerBase:set_interaction_anim(interaction_anim)
@@ -13,6 +12,10 @@ end
 
 function FPCameraPlayerBase:interaction_anim()
 	return self._interaction_anim
+end
+
+function FPCameraPlayerBase:right_modifier_blend_t()
+	return self._ik_modifiers["right"]:blend() or 0
 end
 
 function FPCameraPlayerBase:clear_interaction_anim()
@@ -56,24 +59,23 @@ function FPCameraPlayerBase:set_ik_unit(ik_unit)
 	self._ik = ik_unit
 
 	self._ik_modifiers = {
-		left = self._unit:anim_state_machine():get_modifier(ids_left_ik_modifier_name),
 		right = self._unit:anim_state_machine():get_modifier(ids_right_ik_modifier_name)
 	}
 end
 
-function FPCameraPlayerBase:start_ik(start_left, start_right)
-	if start_left then
-		self._unit:anim_state_machine():force_modifier(ids_left_ik_modifier_name)
-	end
+function FPCameraPlayerBase:start_ik()
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	self._unit:anim_state_machine():force_modifier(ids_right_ik_modifier_name)
 
-	if start_right then
-		self._unit:anim_state_machine():force_modifier(ids_right_ik_modifier_name)
-	end
+	-- align objs don't move with the IK so relink to hand
+	weap_unit:unlink()
+	self._unit:link(Idstring("RightHand"), weap_unit)
+
+	self._ik_update = true
 end
 
--- arm = "left" or "right"
-function FPCameraPlayerBase:update_ik(arm)
-	local locator = self._ik:get_object(Idstring("ik_" .. arm))
+function FPCameraPlayerBase:update_ik()
+	local locator = self._ik:get_object(Idstring("ik_right"))
 	if not self._ik or not alive(self._ik) or not locator then
 		return
 	end
@@ -87,48 +89,9 @@ function FPCameraPlayerBase:update_ik(arm)
 	mrotation.multiply(rot, self._unit:rotation())
 	mrotation.multiply(rot, locator:local_rotation())
 
-	self:_update_ik_align(arm)
-
-	if not self._ik_modifiers[arm] then
-		log("[FPCameraPlayerBase:update_ik] Invalid arm for IK update: " .. tostring(arm))
-	end
-
-	self._ik_modifiers[arm]:set_target_position(pos)
-	self._ik_modifiers[arm]:set_target_rotation(rot)
-	--Application:draw_sphere(pos, 5, 1, 0, 0)
-end
-
-local pos = Vector3()
-local rot = Rotation()
--- weapon is not parented to the hands so manually move it
--- sadly this method does not allow for making the weapon spin with the anim 
-function FPCameraPlayerBase:_update_ik_align(arm)
-	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	local align_obj = self._unit:get_object(Idstring("a_weapon_" .. arm))
-	local hand = self._unit:get_object(Idstring((arm == "right" and "Right" or "Left") .. "Hand"))
-
-	if not self._ik_align_offsets then
-		self._ik_align_offsets = {
-			pos = align_obj:position() - hand:position(),
-			rot = hand:rotation():inverse() * align_obj:rotation()
-		}
-
-		mvector3.rotate_with(self._ik_align_offsets.pos, hand:rotation():inverse())
-	end
-
-	mvector3.set_zero(pos)
-	mvector3.add(pos, self._ik_align_offsets.pos)
-	mvector3.rotate_with(pos, hand:rotation())
-	mvector3.add(pos, hand:position())
-
-	mrotation.set_zero(rot)
-	mrotation.multiply(rot, hand:rotation())
-	mrotation.multiply(rot, self._ik_align_offsets.rot)
-
-	weap_unit:set_position(pos)
-	weap_unit:set_rotation(rot)
-
-	--Application:draw_sphere(pos, 5, 0, 1, 0)
+	self._ik_modifiers["right"]:set_target_position(pos)
+	self._ik_modifiers["right"]:set_target_rotation(rot)
+	Application:draw_sphere(pos, 5, 1, 0, 0)
 end
 
 function FPCameraPlayerBase:stop_ik()
@@ -137,18 +100,22 @@ function FPCameraPlayerBase:stop_ik()
 	end
 
 	self._unit:anim_state_machine():forbid_modifier(ids_right_ik_modifier_name)
-	self._unit:anim_state_machine():forbid_modifier(ids_left_ik_modifier_name)
+end
+
+function FPCameraPlayerBase:reattach_weapon()
+	if not self._ik or not alive(self._ik) then
+		return
+	end
 
 	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	self._unit:link(Idstring("RightHand"), weap_unit)
-
-	self._ik_align_offsets = nil
+	self._unit:link(Idstring("a_weapon_right"), weap_unit, weap_unit:orientation_object():name())
+	self._ik_update = false
 end
 
 -- Avoid going into the empty state while doing IK or else it won't work
 local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
 function FPCameraPlayerBase:anim_clbk_idle_full_blend()
-	if not self._ik:anim_data().playing and not self._interaction_anim then	
+	if not self._ik_update then	
 		orig_anim_clbk_idle_full_blend(self)
 	end
 end
@@ -201,8 +168,6 @@ function FPCameraPlayerBase:anim_clbk_unspawn_interaction_items()
 
 	self._interaction_item_units = {}
 end
-
--- Animation callbacks
 
 function FPCameraPlayerBase:anim_clbk_offhand_exit()
 	self:clear_interaction_anim()

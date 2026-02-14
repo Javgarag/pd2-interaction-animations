@@ -5,6 +5,8 @@ PackageManager:load("packages/intanim")
 
 local orig_spawn_camera_unit = PlayerCamera.spawn_camera_unit
 function PlayerCamera:spawn_camera_unit()
+	if not alive(self._unit) then return end
+	
 	self._ik = World:spawn_unit(Idstring("mods/int_anim/units/fps_ik_controller/fps_ik_controller"), self._m_cam_pos, self._m_cam_rot)
 	self._ik_machine = self._ik:anim_state_machine()
 	self._unit:link(self._ik)
@@ -21,7 +23,7 @@ function PlayerCamera:play_ik_redirect(redirect_name, speed_multiplier)
 		if result ~= PlayerCamera.IDS_NOTHING then
 			self._ik_animation = ids_redirect_name
 			self._ik_machine:set_speed(result, speed_multiplier or 1)
-			self._camera_unit:base():start_ik(self._ik:anim_data().left or false, self._ik:anim_data().right or false)
+			self._camera_unit:base():start_ik()
 		end
 	end
 end
@@ -29,16 +31,25 @@ end
 local orig_update_player_camera = PlayerCamera.update
 function PlayerCamera:update(unit, t, dt)
 	if self._ik_machine and self._camera_unit and alive(self._camera_unit) and self._ik_animation then
-		if not self._ik:anim_data().playing and not self._camera_unit:base():interaction_anim() then
-			self._ik_animation = nil
-			self._camera_unit:base():stop_ik()
+		if not self._ik:anim_data().playing then
+			if not self._camera_unit:base():interaction_anim() and not self._reattach_t then
+				self._camera_unit:base():stop_ik()
+				self._reattach_t = t + self._camera_unit:base():right_modifier_blend_t()
+			end
+
+			if self._reattach_t and t >= self._reattach_t then
+				self._camera_unit:base():reattach_weapon()
+				self._ik_animation = nil
+				self._reattach_t = nil
+			end
+
 			return
 		end
 
 		self._last_ik_t = self._last_ik_t or t 
 		if t - self._last_ik_t > 10^-3 then
 			self._last_ik_t = t
-			self._camera_unit:base():update_ik(self._ik:anim_data().right and "right" or "left") -- "right" takes priority
+			self._camera_unit:base():update_ik()
 		end
 	end
 
