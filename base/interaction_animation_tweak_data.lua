@@ -3,10 +3,8 @@ InteractionTweakData = InteractionTweakData or class()
 local animations = {
 	insert_gensec_keycard = {
 		animation_state_machine_name = "insert_keycard",
-		offhand_animation = {
-			name = "tester",
-			speed = 1.3
-		},
+		hold_blend_in_t = 0.4,
+		hold_duration_t = 0.3,
 		units = {
 			{
 				unit_path = "units/payday2/pickups/gen_pku_keycard/gen_pku_keycard",  -- For per-object rigging, see FPCameraPlayerBase:spawn_melee_item
@@ -20,10 +18,8 @@ local animations = {
 	},
 	grab = {
 		animation_state_machine_name = "grab",
-		offhand_animation = {
-			name = "tester",
-			speed = 1
-		}
+		hold_blend_in_t = 0.4,
+		hold_duration_t = 0.3,
 	},
 	fix_drill = {
 		animation_state_machine_name = "fix_drill",
@@ -69,11 +65,17 @@ local animations = {
 	}
 }
 
+local weapon_arm = {
+	test = {
+		hold_position_t = .5
+	}
+}
+
 local old_init = InteractionTweakData.init
 function InteractionTweakData:init(tweak_data)
 	old_init(self, tweak_data)
 	self.animations = self.animations or {}
-	
+
 	self.animations.key = animations.insert_gensec_keycard
 	self.animations.timelock_panel = animations.insert_gensec_keycard
 	self.animations.key_double = animations.insert_gensec_keycard
@@ -189,4 +191,7 @@ function InteractionTweakData:init(tweak_data)
 	self.animations.no_interaction = animations.lockpick
 	self.animations.pick_lock_x_axis = animations.lockpick
 	self.animations.pick_lock_hard_no_skill_deactivated = animations.lockpick
+
+	self.animations.weapon_arm = self.weapon_arm or {}
+	self.animations.weapon_arm.test = weapon_arm.test
 end

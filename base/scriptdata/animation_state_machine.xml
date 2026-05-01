@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<tweaks>
+	<tweak version="2" name="anims/fps/fps" extension="animation_state_machine">
+		<search>
+			<state_machine/>
+			<segment name="base"/>
+		</search>
+
+		<target mode="append">
+			<segment name="offhand"/>
+			<segment name="weapon_arm"/>
+		</target>
+	</tweak>
+</tweaks>

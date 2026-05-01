@@ -1,9 +1,9 @@
-dofile(ModPath .. "lua/PlayerCamera.lua")
-
 UnitBase = UnitBase or class()
 FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
 
-local ids_right_ik_modifier_name = Idstring("right_arm_ik")
+FPCameraPlayerBase.IDS_WEAPON_ARM_STATE = Idstring("fps/interact/weapon_arm/test")
+FPCameraPlayerBase.IDS_WEAPON_ARM_REDIRECT = Idstring("weapon_arm_test")
+FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT = Idstring("weapon_arm_empty")
 
 function FPCameraPlayerBase:set_interaction_anim(interaction_anim)
 	self._interaction_anim = interaction_anim
@@ -14,15 +14,87 @@ function FPCameraPlayerBase:interaction_anim()
 	return self._interaction_anim
 end
 
-function FPCameraPlayerBase:right_modifier_blend_t()
-	return self._ik_modifiers["right"]:blend() or 0
-end
-
 function FPCameraPlayerBase:clear_interaction_anim()
 	if self._interaction_anim then
-		self._unit:anim_state_machine():set_global(self._interaction_anim.weight, 0)
 		self:set_interaction_anim(nil)
+		self:play_redirect(Idstring("weapon_arm_empty"))
 	end
+end
+
+-- Avoid empty state if playing interact anim (for blending on weapon_arm segment)
+local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
+function FPCameraPlayerBase:anim_clbk_idle_full_blend()
+	--if not self._interaction_anim then	
+		--orig_anim_clbk_idle_full_blend(self)
+	--end
+end
+
+function FPCameraPlayerBase:do_offhand_anim()
+	if not self._interaction_anim then
+		log("[FPCameraPlayerBase:do_offhand_anim] No interaction anim set")
+		return
+	end
+
+	self:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	self:start_weapon_arm_interaction_anim()
+end
+
+-- Timeblending on weapon_arm segment
+
+function FPCameraPlayerBase:start_weapon_arm_interaction_anim()
+	self:attach_weapon_to_hand()
+
+	self._weapon_arm_timeblend = true
+	self._weapon_arm_timeblend_t = TimerManager:game():time()
+	self._weapon_arm_anim_td = tweak_data.interaction.animations.weapon_arm.test
+
+	self:play_redirect_timeblend(self.IDS_WEAPON_ARM_STATE, self.IDS_WEAPON_ARM_REDIRECT, 0, self._weapon_arm_timeblend_t)
+end
+
+-- The two animations have distinct hold times; weapon_arm's points to the actual pose in its animation and the intanim's points to the time where that pose should be hit.
+-- To sync both, map_range is used
+Hooks:PostHook(FPCameraPlayerBase, "update", "int_anim_fpcameraplayerbase_update", function(self, unit, t, dt)
+	if self._interaction_anim and self._weapon_arm_timeblend then
+		local offhand_t = self._unit:anim_state_machine():segment_relative_time(Idstring("offhand"))
+
+		-- Blend-in period
+		if offhand_t < self._interaction_anim.hold_blend_in_t then
+			self._timeblend_t = math.map_range(offhand_t, 
+				0, self._interaction_anim.hold_blend_in_t, 
+				0, self._weapon_arm_anim_td.hold_position_t
+			)
+		end
+
+		-- Hold (nothing)
+
+		-- Blend-out period
+		if offhand_t - self._interaction_anim.hold_blend_in_t >= self._interaction_anim.hold_duration_t then
+			self._timeblend_t = math.map_range(offhand_t, 
+				self._interaction_anim.hold_blend_in_t + self._interaction_anim.hold_duration_t, 1, 
+				self._weapon_arm_anim_td.hold_position_t, 1
+			)
+		end
+
+		self:play_redirect_timeblend(self.IDS_WEAPON_ARM_STATE, self.IDS_WEAPON_ARM_REDIRECT, 0, self._timeblend_t)
+	elseif not self._interaction_anim and self._weapon_arm_timeblend then
+		self._weapon_arm_timeblend = false
+		self._weapon_arm_timeblend_t = nil
+		self:play_redirect(self.IDS_WEAPON_ARM_EMPTY_REDIRECT)
+	end
+end)
+
+-- Weapon attachment
+
+function FPCameraPlayerBase:attach_weapon_to_hand()
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	weap_unit:unlink()
+	self._unit:link(Idstring("RightHand"), weap_unit)
+end
+
+function FPCameraPlayerBase:attach_weapon_to_align()
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	weap_unit:unlink()
+	self._unit:link(Idstring("a_weapon_right"), weap_unit, weap_unit:orientation_object():name())
 end
 
 -- Arm direction
@@ -51,73 +123,6 @@ function FPCameraPlayerBase:_update_rot(axis, unscaled_axis)
 	mrotation.multiply(final_rot, interact_arm_offset_rot, arm_rot)
 
 	self:set_rotation(final_rot)
-end
-
--- IK
-
-function FPCameraPlayerBase:set_ik_unit(ik_unit)
-	self._ik = ik_unit
-
-	self._ik_modifiers = {
-		right = self._unit:anim_state_machine():get_modifier(ids_right_ik_modifier_name)
-	}
-end
-
-function FPCameraPlayerBase:start_ik()
-	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	self._unit:anim_state_machine():force_modifier(ids_right_ik_modifier_name)
-
-	-- align objs don't move with the IK so relink to hand
-	weap_unit:unlink()
-	self._unit:link(Idstring("RightHand"), weap_unit)
-
-	self._ik_update = true
-end
-
-function FPCameraPlayerBase:update_ik()
-	local locator = self._ik:get_object(Idstring("ik_right"))
-	if not self._ik or not alive(self._ik) or not locator then
-		return
-	end
-
-	local pos = Vector3()
-	mvector3.add(pos, locator:local_position())
-	mvector3.rotate_with(pos, self._unit:rotation())
-	mvector3.add(pos, self._unit:position())
-
-	local rot = Rotation()
-	mrotation.multiply(rot, self._unit:rotation())
-	mrotation.multiply(rot, locator:local_rotation())
-
-	self._ik_modifiers["right"]:set_target_position(pos)
-	self._ik_modifiers["right"]:set_target_rotation(rot)
-	Application:draw_sphere(pos, 5, 1, 0, 0)
-end
-
-function FPCameraPlayerBase:stop_ik()
-	if not self._ik or not alive(self._ik) then
-		return
-	end
-
-	self._unit:anim_state_machine():forbid_modifier(ids_right_ik_modifier_name)
-end
-
-function FPCameraPlayerBase:reattach_weapon()
-	if not self._ik or not alive(self._ik) then
-		return
-	end
-
-	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	self._unit:link(Idstring("a_weapon_right"), weap_unit, weap_unit:orientation_object():name())
-	self._ik_update = false
-end
-
--- Avoid going into the empty state while doing IK or else it won't work
-local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
-function FPCameraPlayerBase:anim_clbk_idle_full_blend()
-	if not self._ik_update then	
-		orig_anim_clbk_idle_full_blend(self)
-	end
 end
 
 -- Animation callbacks
@@ -203,4 +208,8 @@ function FPCameraPlayerBase:anim_clbk_interact_interupt_exit()
 
 	self:clear_interaction_anim()
 	self:clear_interact_object()
+end
+
+function FPCameraPlayerBase:anim_clbk_weapon_arm_empty_full_blend()
+	self:attach_weapon_to_align()
 end
