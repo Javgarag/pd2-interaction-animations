@@ -19,5 +19,8 @@
 		<anim name="lockpick_enter" file="anims/fps/interacts/lockpick/lockpick_enter" blend_set="all"/>
 		<anim name="lockpick_loop" file="anims/fps/interacts/lockpick/lockpick_loop" blend_set="all"/>
 		<anim name="lockpick_exit" file="anims/fps/interacts/lockpick/lockpick_exit" blend_set="all"/>
+
+		<!-- Testing animations: DELETE -->
+		<anim name="weapon_arm_test" file="anims/fps/weapon_arm/test" blend_set="weapon_arm"/>
     </target>
 </tweak>

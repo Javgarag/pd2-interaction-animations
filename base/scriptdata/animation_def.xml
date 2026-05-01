@@ -12,6 +12,15 @@
 				<blend alias="right_arm" weight="0"/>
 				<blend name="a_weapon_right" weight="0"/>
 			</blend_set>
+
+			<blend_set name="weapon_arm" animatable_set="fps">
+				<blend alias="all" weight="1"/>
+				<blend alias="left_finger" weight="0"/>
+				<blend alias="left_arm" weight="0"/>
+				<blend alias="right_finger" weight="0"/>
+				<blend name="a_weapon_left" weight="0"/>
+				<blend name="a_weapon_right" weight="0"/>
+			</blend_set>
 		</target>
 	</tweak>
 </tweaks>

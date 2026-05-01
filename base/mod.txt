@@ -10,15 +10,15 @@
 	"hooks" : [
 		{
 			"hook_id" : "lib/units/beings/player/states/playerstandard",
-			"script_path" : "core.lua"
+			"script_path" : "lua/PlayerStandard.lua"
 		},
 		{
 			"hook_id" : "lib/units/beings/player/states/playercarry",
-			"script_path" : "core.lua"
+			"script_path" : "lua/PlayerCarry.lua"
 		},
 		{
 			"hook_id" : "lib/units/cameras/fpcameraplayerbase",
-			"script_path" : "core.lua"
+			"script_path" : "lua/FPCameraPlayerBase.lua"
 		},
 		{
 			"hook_id" : "lib/tweak_data/interactiontweakdata",
