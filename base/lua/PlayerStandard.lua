@@ -19,7 +19,7 @@ end)
 
 --[[
 	PlayerStandard._ext_camera = PlayerCamera object
-	PlayerStandard._ext_camera:camera_unit():base() = FPCameraPlayerBase object
+	PlayerStandard._ext_camera:camera_unit() = FPCameraPlayerBase object
 ]]--
 PlayerMovementState = PlayerMovementState or class()
 PlayerStandard = PlayerStandard or class(PlayerMovementState)
@@ -41,7 +41,10 @@ function PlayerStandard:_play_interact_redirect(t)
 		return
 	end
 
-	self._ext_camera:camera_unit():base():do_offhand_anim()
+	self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	if self._interaction_anim.offhand_animation then
+		self._ext_camera:play_ik_redirect(self._interaction_anim.offhand_animation.name or "", self._interaction_anim.offhand_animation.speed or 1)
+	end
 end
 
 -- Timed interactions (hard overwrite)

@@ -1,0 +1,4 @@
+<dynamic_object>
+	<diesel orientation_object="rp_ik" />
+	<animation_def name="mods/int_anim/units/fps_ik_controller/asm/definition" />
+</dynamic_object>

@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <mod>
-	<tweak definition="scriptdata/animation_state_machine.xml" />
 	<tweak definition="scriptdata/animation_states.xml" />
 	<tweak definition="scriptdata/animation_subset.xml" />
 	<tweak definition="scriptdata/animation_def.xml" />

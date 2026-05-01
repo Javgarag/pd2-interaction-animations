@@ -1,0 +1,5 @@
+<state_machine name="controller" timebase="frames">
+	<segment name="all"/>
+	<default state="std/empty"/>
+	<states file="mods/int_anim/units/fps_ik_controller/asm/states"/>
+</state_machine>
