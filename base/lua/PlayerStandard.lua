@@ -19,7 +19,7 @@ end)
 
 --[[
 	PlayerStandard._ext_camera = PlayerCamera object
-	PlayerStandard._ext_camera:camera_unit():base() = FPCameraPlayerBase object
+	PlayerStandard._camera_unit:base() = FPCameraPlayerBase object
 ]]--
 PlayerMovementState = PlayerMovementState or class()
 PlayerStandard = PlayerStandard or class(PlayerMovementState)
@@ -32,6 +32,14 @@ function PlayerStandard:_play_interact_redirect(t)
 	end
 
 	self._state_data.interact_redirect_t = t + 1
+
+	local current_offhand_state = self._camera_unit:anim_state_machine():segment_state(Idstring("offhand"))
+	if current_offhand_state ~= Idstring("") and current_offhand_state ~= Idstring("fps/interact/offhand_empty") and current_offhand_state ~= Idstring("fps/interact/offhand_empty_no_blend") then
+		self._spammy_interact = true
+	else
+		self._spammy_interact = false
+	end
+
 	self._interaction_anim = self._camera_unit:base():set_interaction_anim(tweak_data.interaction.animations[self._interaction_unit:interaction().tweak_data])
 
 	local has_akimbo = alive(self._equipped_unit) and self._equipped_unit:base().akimbo
@@ -41,7 +49,7 @@ function PlayerStandard:_play_interact_redirect(t)
 		return
 	end
 
-	self._ext_camera:camera_unit():base():do_offhand_anim()
+	self._camera_unit:base():do_offhand_anim(self._spammy_interact)
 end
 
 -- Timed interactions (hard overwrite)
@@ -74,7 +82,7 @@ function PlayerStandard:_start_action_interact(t, input, timer, interact_object)
 	self._unit:network():send("sync_interaction_anim", true, self._interact_params.tweak_data)
 end
 
--- Timed interaction interupt (play specific interupt redirect, also a hard overwrite)
+-- (play specific interupt redirect)
 function PlayerStandard:_interupt_action_interact(t, input, complete)
 	if self._interact_expire_t then
 		self:_clear_tap_to_interact()

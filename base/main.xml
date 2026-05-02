@@ -1,7 +1,7 @@
 <table name="Interaction Animations" author="Javgarag">
 	<AddFiles directory="assets">
 		<!-- Animations -->
-		<animation path="anims/fps/weapon_arm/test" load="true"/>
+		<animation path="anims/fps/weapon_arm/move_var1" load="true"/>
 		
 		<animation path="anims/fps/interacts/keycard_insert" load="true"/>
 		<animation path="anims/fps/interacts/grab" load="true"/>

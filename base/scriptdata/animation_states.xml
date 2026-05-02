@@ -16,7 +16,7 @@
 			<to name="insert_keycard" redirect="fps/interact/offhand/insert_keycard"/>
 
 			<!-- WEAPON ARM -->
-			<to name="weapon_arm_test" redirect="fps/interact/weapon_arm/test"/>
+			<to name="weapon_arm_move" redirect="fps/interact/weapon_arm/move"/>
 		</target>
 	</tweak>
 	
@@ -153,12 +153,18 @@
 				</keys>
 				
 				<to name="offhand_empty" redirect="fps/interact/offhand_empty"/>
+				<to name="offhand_empty_no_blend" redirect="fps/interact/offhand_empty_no_blend"/>
+
 				<exit name="fps/interact/offhand_empty"/>
 			</state>
 
 			<state name="fps/interact/offhand_empty" type="emptyloop" segment="offhand" speed="1.0"> 
 				<from_group name="fps/interact/offhand" blend="3"/>
 				<to name="offhand_empty" redirect=""/>
+			</state>
+
+			<state name="fps/interact/offhand_empty_no_blend" type="emptyloop" segment="offhand" speed="1.0"> 
+				<to name="offhand_empty_no_blend" redirect=""/>
 			</state>
 			
 			<state name="fps/interact/offhand/grab" type="once" segment="offhand" speed="1.0"> 
@@ -178,22 +184,34 @@
 			<!-- To play while playing an offhand anim. Controlled through timeblend.
 			-->
 			<state name="fps/interact/weapon_arm" type="template_state" segment="weapon_arm">
-				<to name="weapon_arm_empty" redirect="fps/interact/weapon_arm/empty"/>
-				<exit name="fps/interact/weapon_arm/empty"/>
+				<to name="weapon_arm_empty" redirect="fps/interact/weapon_arm_empty"/>
+				<to name="weapon_arm_empty_no_blend" redirect="fps/interact/weapon_arm_empty_no_blend"/>
+
+				<exit name="fps/interact/weapon_arm_empty"/>
 			</state>
 
-			<state name="fps/interact/weapon_arm/empty" type="emptyloop" segment="weapon_arm">
-				<from_group name="fps/interact/weapon_arm" blend="10"/>
+			<state name="fps/interact/weapon_arm_empty" type="emptyloop" segment="weapon_arm">
+				<from name="fps/interact/weapon_arm/move" blend="2"/>
 				<to name="weapon_arm_empty" redirect=""/>
 
 				<keys>
 					<!-- The "full_blend" flag does not work for emptyloop states. "at" should be equal to/longer than the longest blend -->
-					<key at="2" callback="anim_clbk_weapon_arm_empty_full_blend" class_name="anim_data"/>
+					<key at="3" callback="anim_clbk_weapon_arm_empty_full_blend" class_name="base"/>
 				</keys>
 			</state>
 
-			<state name="fps/interact/weapon_arm/test" type="timeblend" segment="weapon_arm"> 
-				<anim name="weapon_arm_test" time="1"/>
+			<state name="fps/interact/weapon_arm_empty_no_blend" type="emptyloop" segment="weapon_arm">
+				<to name="weapon_arm_empty_no_blend" redirect=""/>
+
+				<keys>
+					<key at="enter" callback="anim_clbk_weapon_arm_empty_full_blend" class_name="base"/>
+				</keys>
+			</state>
+
+			<state name="fps/interact/weapon_arm/move" type="timeblend" segment="weapon_arm"> 
+				<from_group name="fps" blend="0.6"/>
+
+				<anim name="move_var1" time="1"/>
 			</state>
 		</target>
 	</tweak>
