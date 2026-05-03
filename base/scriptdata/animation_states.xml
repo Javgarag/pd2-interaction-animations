@@ -208,9 +208,9 @@
 				</keys>
 			</state>
 
-			<state name="fps/interact/weapon_arm/move/blend" type="once" segment="weapon_arm"> 
-				<from_group name="fps" blend="1.5"/>
-				<anim name="move_var1" time="1"/>
+			<state name="fps/interact/weapon_arm/move/blend" type="mix" segment="weapon_arm"> 
+				<from_group name="fps" blend="3"/>
+				<anim name="move_pistol" weight="int_anims_pistol"/>
 
 				<keys>
 					<key at="full_blend" callback="anim_clbk_weapon_arm_anim_full_blend" class_name="base"/>
@@ -218,7 +218,7 @@
 			</state>
 
 			<state name="fps/interact/weapon_arm/move" type="timeblend" segment="weapon_arm"> 
-				<anim name="move_var1" time="1"/>
+				<anim name="move_pistol" weight="int_anims_pistol" time="1"/>
 			</state>
 		</target>
 	</tweak>

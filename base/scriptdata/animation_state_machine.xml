@@ -9,6 +9,8 @@
 		<target mode="append">
 			<segment name="offhand"/>
 			<segment name="weapon_arm"/>
+
+			<global name="int_anims_pistol" value="0"/>
 		</target>
 	</tweak>
 </tweaks>

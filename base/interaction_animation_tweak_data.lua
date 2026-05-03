@@ -68,8 +68,8 @@ local animations = {
 }
 
 local weapon_arm = {
-	var1 = {
-		hold_position_t = 0.27
+	pistol = {
+		hold_position_t = 0.96
 	}
 }
 
@@ -195,5 +195,5 @@ function InteractionTweakData:init(tweak_data)
 	self.animations.pick_lock_hard_no_skill_deactivated = animations.lockpick
 
 	self.animations.weapon_arm = self.weapon_arm or {}
-	self.animations.weapon_arm.var1 = weapon_arm.var1
+	self.animations.weapon_arm.pistol = weapon_arm.pistol
 end

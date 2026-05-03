@@ -53,13 +53,23 @@ end
 
 -- Timeblending on weapon_arm segment
 
+function FPCameraPlayerBase:reset_weapon_arm_globals()
+	local asm = self._unit:anim_state_machine()
+	asm:set_global("int_anims_pistol", 0)
+end
+
 function FPCameraPlayerBase:start_weapon_arm_interaction_anim(is_spammy)
 	self:attach_weapon_to_hand()
 
-	self._weapon_arm_anim_td = tweak_data.interaction.animations.weapon_arm.var1 -- temp. make more anims, make random
-	self._weapon_arm_anim_extended_hold = is_spammy -- temp. not used yet but not removing either
+	local asm = self._unit:anim_state_machine()
+	if managers.player:is_current_weapon_of_category("pistol") then
+		asm:set_global("int_anims_pistol", 1)
+		self._weapon_arm_anim_td = tweak_data.interaction.animations.weapon_arm.pistol
+	end
+	
+	if not self._weapon_arm_anim_td then return end
 
-	self:play_redirect(Idstring("weapon_arm_move_blend"))
+	self:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT)
 end
 
 -- The two animations have distinct hold times; weapon_arm's points to the actual pose in its animation and the intanim's points to the time where that pose should be hit.
@@ -70,21 +80,10 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "int_anim_fpcameraplayerbase_update
 		-- Blend-in period
 		if offhand_t < self._interaction_anim.hold_blend_in_t then
 			self._timeblend_t = math.map_range(offhand_t, 
-				0, self._interaction_anim.hold_blend_in_t, 
-				0, self._weapon_arm_anim_td.hold_position_t
+				self._offhand_start_t, self._interaction_anim.hold_blend_in_t, 
+				self._offhand_start_t, self._weapon_arm_anim_td.hold_position_t
 			)
 		end
-
-		--[[ Blend-out period. 
-		Looks better to me if the engine handles it itself with 'from' blending on the emptyloop
-
-		if offhand_t - self._interaction_anim.hold_blend_in_t >= self._interaction_anim.hold_duration_t then
-			self._timeblend_t = math.map_range(offhand_t, 
-				self._interaction_anim.hold_blend_in_t + self._interaction_anim.hold_duration_t, 1, 
-				self._weapon_arm_anim_td.hold_position_t, 1
-			)
-		end
-		]]
 
 		self:play_redirect_timeblend(self.IDS_WEAPON_ARM_STATE, self.IDS_WEAPON_ARM_REDIRECT, 0, self._timeblend_t)
 	elseif not self._interaction_anim and self._weapon_arm_timeblend then
@@ -221,9 +220,12 @@ function FPCameraPlayerBase:anim_clbk_weapon_arm_empty_full_blend()
 	self:attach_weapon_to_align()
 
 	self._weapon_arm_timeblend = false
-	self._weapon_arm_anim_extended_hold = false
+	self._offhand_start_t = nil
+
+	self:reset_weapon_arm_globals()
 end
 
 function FPCameraPlayerBase:anim_clbk_weapon_arm_anim_full_blend()
 	self._weapon_arm_timeblend = true
+	self._offhand_start_t = self._unit:anim_state_machine():segment_relative_time(Idstring("offhand"))
 end
