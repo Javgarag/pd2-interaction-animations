@@ -3,8 +3,8 @@ InteractionTweakData = InteractionTweakData or class()
 local animations = {
 	insert_gensec_keycard = {
 		animation_state_machine_name = "insert_keycard",
-		hold_blend_in_t = 0.5,
-		hold_duration_t = 0.2,
+		hold_blend_in_t = 0.55,
+		-- hold_duration_t = 0.2,
 		units = {
 			{
 				unit_path = "units/payday2/pickups/gen_pku_keycard/gen_pku_keycard",  -- For per-object rigging, see FPCameraPlayerBase:spawn_melee_item
@@ -18,11 +18,12 @@ local animations = {
 	},
 	grab = {
 		animation_state_machine_name = "grab",
-		hold_blend_in_t = 0.2,
-		hold_duration_t = 0.1,
+		hold_blend_in_t = 0.55,
+		-- hold_duration_t = 0.1,
 	},
 	fix_drill = {
 		animation_state_machine_name = "fix_drill",
+		exit_when_time_left = 0,
 		units = {
 			{
 				unit_path = "units/pd2_dlc_glace/props/glc_prop_construction_tool/glc_prop_contruction_tool_wrench01",
@@ -42,7 +43,8 @@ local animations = {
 					"a_weapon_left"
 				}
 			}
-		}
+		},
+		exit_when_time_left = 0.5,
 	},
 	lockpick = {
 		animation_state_machine_name = "lockpick",
@@ -60,14 +62,14 @@ local animations = {
 				}
 			}
 		},
-		exit_when_time_left = 3,
+		exit_when_time_left = 0.25,
 		hide_weapon = true
 	}
 }
 
 local weapon_arm = {
 	var1 = {
-		hold_position_t = .5
+		hold_position_t = 0.27
 	}
 }
 

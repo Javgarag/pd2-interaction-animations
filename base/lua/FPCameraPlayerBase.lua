@@ -3,7 +3,9 @@ FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
 
 FPCameraPlayerBase.IDS_WEAPON_ARM_STATE = Idstring("fps/interact/weapon_arm/move")
 FPCameraPlayerBase.IDS_WEAPON_ARM_REDIRECT = Idstring("weapon_arm_move")
+FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT = Idstring("weapon_arm_move_blend")
 FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT = Idstring("weapon_arm_empty")
+FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_NO_BLEND_REDIRECT = Idstring("weapon_arm_empty_no_blend")
 
 function FPCameraPlayerBase:set_interaction_anim(interaction_anim)
 	self._interaction_anim = interaction_anim
@@ -31,9 +33,9 @@ end
 
 local orig_play_redirect = FPCameraPlayerBase.play_redirect
 function FPCameraPlayerBase:play_redirect(redirect_name, speed, offset_time)
-	if redirect_name ~= FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT then -- clear_interaction_anim
+	if redirect_name ~= FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT and redirect_name ~= FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT then
 		self._unit:play_redirect(Idstring("offhand_empty_no_blend"))
-		self._unit:play_redirect(Idstring("weapon_arm_empty_no_blend"))
+		self._unit:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_NO_BLEND_REDIRECT)
 	end
 
 	return orig_play_redirect(self, redirect_name, speed, offset_time)
@@ -54,13 +56,10 @@ end
 function FPCameraPlayerBase:start_weapon_arm_interaction_anim(is_spammy)
 	self:attach_weapon_to_hand()
 
-	self._weapon_arm_timeblend = true
 	self._weapon_arm_anim_td = tweak_data.interaction.animations.weapon_arm.var1 -- temp. make more anims, make random
 	self._weapon_arm_anim_extended_hold = is_spammy -- temp. not used yet but not removing either
 
-	if not is_spammy then
-		self:play_redirect_timeblend(self.IDS_WEAPON_ARM_STATE, self.IDS_WEAPON_ARM_REDIRECT, 0, TimerManager:game():time())
-	end
+	self:play_redirect(Idstring("weapon_arm_move_blend"))
 end
 
 -- The two animations have distinct hold times; weapon_arm's points to the actual pose in its animation and the intanim's points to the time where that pose should be hit.
@@ -76,15 +75,16 @@ Hooks:PostHook(FPCameraPlayerBase, "update", "int_anim_fpcameraplayerbase_update
 			)
 		end
 
-		-- Hold (nothing)
+		--[[ Blend-out period. 
+		Looks better to me if the engine handles it itself with 'from' blending on the emptyloop
 
-		-- Blend-out period
 		if offhand_t - self._interaction_anim.hold_blend_in_t >= self._interaction_anim.hold_duration_t then
 			self._timeblend_t = math.map_range(offhand_t, 
 				self._interaction_anim.hold_blend_in_t + self._interaction_anim.hold_duration_t, 1, 
 				self._weapon_arm_anim_td.hold_position_t, 1
 			)
 		end
+		]]
 
 		self:play_redirect_timeblend(self.IDS_WEAPON_ARM_STATE, self.IDS_WEAPON_ARM_REDIRECT, 0, self._timeblend_t)
 	elseif not self._interaction_anim and self._weapon_arm_timeblend then
@@ -175,7 +175,7 @@ function FPCameraPlayerBase:anim_clbk_unspawn_interaction_items()
 
 	for _, unit in ipairs(self._interaction_item_units) do
 		if alive(unit) then
-			unit:unlink()
+			unit:set_enabled(false)
 			World:delete_unit(unit)
 		end
 	end
@@ -184,20 +184,17 @@ function FPCameraPlayerBase:anim_clbk_unspawn_interaction_items()
 end
 
 function FPCameraPlayerBase:anim_clbk_offhand_exit()
+	self:anim_clbk_unspawn_interaction_items()
 	self:clear_interaction_anim()
 	self:clear_interact_object()
 end
 
 function FPCameraPlayerBase:anim_clbk_interact_hold_enter()
 	self.interaction_hold_anim_playing = true
-	self.queue_interaction_anim_exit = false
 end
 
-function FPCameraPlayerBase:anim_clbk_interact_hold_loop()
-	if self.queue_interaction_anim_exit then
-		self.queue_interaction_anim_exit = false
-		self:play_redirect(Idstring("interact_exit"))
-	end
+function FPCameraPlayerBase:interact_hold_early_exit()
+	self:play_redirect(Idstring("interact_exit"))
 end
 
 function FPCameraPlayerBase:anim_clbk_interact_hold_exit()
@@ -220,7 +217,13 @@ function FPCameraPlayerBase:anim_clbk_interact_interupt_exit()
 end
 
 function FPCameraPlayerBase:anim_clbk_weapon_arm_empty_full_blend()
+	self._unit:anim_state_machine():stop_segment(Idstring("weapon_arm"))
 	self:attach_weapon_to_align()
+
 	self._weapon_arm_timeblend = false
 	self._weapon_arm_anim_extended_hold = false
+end
+
+function FPCameraPlayerBase:anim_clbk_weapon_arm_anim_full_blend()
+	self._weapon_arm_timeblend = true
 end

@@ -2,7 +2,7 @@
 There are two types of supported animations:
 
 * "Long" interactions: these consist of three animations: one for entering the interaction, one for looping during it, and a final one to exit it. This structure accounts for early cancels and AI speed boosts.
-* "Instant" interactions: these are a single animation that play on the left arm, while maintaining the weapon animation on the other. Sprinting, meleeing or shooting cancel them.
+* "Instant" interactions: these are a single animation that play on the left arm, while playing another animation on the weapon arm (so that the gun is raised or out of the way). Sprinting, meleeing or shooting cancel them.
 
 **You can also use any unit in your animation, and spawn it later**. Animations for deploying equipment are not currently supported, but can be added in a later version of the base mod.
 

@@ -12,8 +12,8 @@ Hooks:PreHook(PlayerStandard, "_check_action_interact", "int_anim_do_interact_an
 end)
 
 Hooks:PostHook(PlayerStandard, "_update_interaction_timers", "int_anim_update_interaction_timers", function(self, t)
-    if self._interaction_anim and self._interact_expire_t and ((self._interact_expire_t <= (self._interaction_anim.exit_when_time_left or 1))) and self._camera_unit:base().interaction_hold_anim_playing then
-        self._camera_unit:base().queue_interaction_anim_exit = true
+    if self._interaction_anim and self._interact_expire_t and ((self._interact_expire_t <= (self._interaction_anim.exit_when_time_left or 0.15))) and self._camera_unit:base().interaction_hold_anim_playing then
+        self._camera_unit:base():interact_hold_early_exit()
     end 
 end)
 

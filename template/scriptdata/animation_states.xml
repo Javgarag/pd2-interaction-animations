@@ -12,7 +12,7 @@
 			<to name="fix_drill" redirect="fps/interact_enter/fix_drill"/>
 			
 			<!-- OFFHANDS -->
-			<to name="insert_keycard" redirect="fps/offhand/interact/insert_keycard"/>
+			<to name="insert_keycard" redirect="fps/interact/offhand/insert_keycard"/>
 		</target>
 	</tweak>
 	
@@ -53,7 +53,7 @@
 			</state>
 			
 			<!-- SECTION #6 -->
-			<state name="fps/offhand/interact/insert_keycard" type="once" segment="base" speed="1.0"> 
+			<state name="fps/interact/offhand/insert_keycard" type="once" segment="base" speed="1.0"> 
 				<default blend="10" blend_out="3"/>
 				<anim name="insert_keycard"/>				
 			</state>
