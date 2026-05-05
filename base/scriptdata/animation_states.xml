@@ -17,7 +17,7 @@
 			<to name="insert_keycard" redirect="fps/interact/offhand/insert_keycard"/>
 
 			<!-- WEAPON ARM -->
-			<to name="weapon_arm_move" redirect="fps/interact/weapon_arm/move"/>
+			<to name="weapon_arm_hold" redirect="fps/interact/weapon_arm/hold"/>
 			<to name="weapon_arm_move_blend" redirect="fps/interact/weapon_arm/move/blend"/>
 		</target>
 	</tweak>
@@ -190,7 +190,7 @@
 			</state>
 
 			<state name="fps/interact/weapon_arm_empty" type="emptyloop" segment="weapon_arm">
-				<from name="fps/interact/weapon_arm/move" blend="6"/>
+				<from name="fps/interact/weapon_arm/hold" blend="6"/>
 				<to name="weapon_arm_empty" redirect=""/>
 
 				<keys>
@@ -209,7 +209,7 @@
 			</state>
 
 			<state name="fps/interact/weapon_arm/move/blend" type="mix" segment="weapon_arm"> 
-				<from_group name="fps" blend="3"/>
+				<from_group name="fps" blend="8"/>
 				<anim name="move_pistol" weight="int_anims_pistol"/>
 
 				<keys>
@@ -217,7 +217,7 @@
 				</keys>
 			</state>
 
-			<state name="fps/interact/weapon_arm/move" type="timeblend" segment="weapon_arm"> 
+			<state name="fps/interact/weapon_arm/hold" type="timeblend" segment="weapon_arm"> 
 				<anim name="move_pistol" weight="int_anims_pistol" time="1"/>
 			</state>
 		</target>
