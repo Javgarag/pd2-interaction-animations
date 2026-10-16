@@ -71,7 +71,8 @@ function FPCameraPlayerBase:start_weapon_arm_interaction_anim(is_spammy)
 	
 	if not self._weapon_arm_anim_td then return end
 
-	self:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT)
+	-- buggy so disabled for now
+	--self:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT)
 end
 
 -- Weapon attachment

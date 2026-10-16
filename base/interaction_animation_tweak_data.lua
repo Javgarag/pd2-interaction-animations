@@ -172,6 +172,15 @@ function InteractionTweakData:init(tweak_data)
 	self.animations.pku_manifest = animations.grab
 	self.animations.money_bag = animations.grab
 
+	self.animations.drill_jammed = animations.fix_drill
+	self.animations.lance_jammed = animations.fix_drill
+	self.animations.huge_lance_jammed = animations.fix_drill
+	self.animations.hospital_saw_jammed = animations.fix_drill
+	self.animations.apartment_saw_jammed = animations.fix_drill
+	self.animations.secret_stash_saw_jammed = animations.fix_drill
+	self.animations.gen_int_saw_jammed = animations.fix_drill
+	self.animations.drill_upgrade = animations.fix_drill
+
 	self.animations.corpse_alarm_pager = animations.answer_radio
 
 	self.animations.pick_lock_easy = animations.lockpick

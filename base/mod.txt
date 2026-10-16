@@ -1,8 +1,8 @@
 {
 	"name" : "Interaction Animations",
 	"description" : "Adds first-person animations to various interactions.",
-	"author" : "Javgarag",
-	"contact" : "Discord: javgarag",
+	"author" : "Javgarag, PlayBONK",
+	"contact" : "Discord: javgarag, playbonk",
 	"version" : "1.0.0",
 	"priority" : 1000,
 	"blt_version" : 2,
