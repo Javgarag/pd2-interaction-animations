@@ -15,10 +15,6 @@
 			<!-- OFFHANDS -->
 			<to name="grab" redirect="fps/interact/offhand/grab"/>
 			<to name="insert_keycard" redirect="fps/interact/offhand/insert_keycard"/>
-
-			<!-- WEAPON ARM -->
-			<to name="weapon_arm_hold" redirect="fps/interact/weapon_arm/hold"/>
-			<to name="weapon_arm_move_blend" redirect="fps/interact/weapon_arm/move/blend"/>
 		</target>
 	</tweak>
 	
@@ -159,6 +155,11 @@
 			</state>
 
 			<state name="fps/interact/offhand_empty" type="emptyloop" segment="offhand" speed="1.0"> 
+				<keys>
+					<!-- The "full_blend" flag does not work for emptyloop states. "at" should be equal to/longer than the longest blend -->
+					<key at="4" callback="anim_clbk_offhand_exit_full_blend" class_name="base"/>
+				</keys>
+				
 				<from_group name="fps/interact/offhand" blend="3"/>
 				<to name="offhand_empty" redirect=""/>
 			</state>
@@ -177,48 +178,6 @@
 				<keys>
 					<key at="trigger" trigger="keycard_despawn" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
 				</keys>				
-			</state>
-
-			<!-- Weapon arm -->
-			<!-- To play while playing an offhand anim -->
-
-			<state name="fps/interact/weapon_arm" type="template_state" segment="weapon_arm">
-				<to name="weapon_arm_empty" redirect="fps/interact/weapon_arm_empty"/>
-				<to name="weapon_arm_empty_no_blend" redirect="fps/interact/weapon_arm_empty_no_blend"/>
-
-				<exit name="fps/interact/weapon_arm_empty"/>
-			</state>
-
-			<state name="fps/interact/weapon_arm_empty" type="emptyloop" segment="weapon_arm">
-				<from name="fps/interact/weapon_arm/hold" blend="6"/>
-				<to name="weapon_arm_empty" redirect=""/>
-
-				<keys>
-					<!-- The "full_blend" flag does not work for emptyloop states. "at" should be equal to/longer than the longest blend -->
-					<key at="5" callback="anim_clbk_weapon_arm_empty_full_blend" class_name="base"/>
-					<key at="4" callback="play_sound" class_name="base" param1="wp_foley_generic_back_in_hand"/>
-				</keys>
-			</state>
-
-			<state name="fps/interact/weapon_arm_empty_no_blend" type="emptyloop" segment="weapon_arm">
-				<to name="weapon_arm_empty_no_blend" redirect=""/>
-
-				<keys>
-					<key at="enter" callback="anim_clbk_weapon_arm_empty_full_blend" class_name="base"/>
-				</keys>
-			</state>
-
-			<state name="fps/interact/weapon_arm/move/blend" type="mix" segment="weapon_arm"> 
-				<from_group name="fps" blend="8"/>
-				<anim name="move_pistol" weight="int_anims_pistol"/>
-
-				<keys>
-					<key at="full_blend" callback="anim_clbk_weapon_arm_anim_full_blend" class_name="base"/>
-				</keys>
-			</state>
-
-			<state name="fps/interact/weapon_arm/hold" type="timeblend" segment="weapon_arm"> 
-				<anim name="move_pistol" weight="int_anims_pistol" time="1"/>
 			</state>
 		</target>
 	</tweak>

@@ -67,12 +67,6 @@ local animations = {
 	}
 }
 
-local weapon_arm = {
-	pistol = {
-		hold_position_t = 0.96
-	}
-}
-
 local old_init = InteractionTweakData.init
 function InteractionTweakData:init(tweak_data)
 	old_init(self, tweak_data)
@@ -202,7 +196,4 @@ function InteractionTweakData:init(tweak_data)
 	self.animations.no_interaction = animations.lockpick
 	self.animations.pick_lock_x_axis = animations.lockpick
 	self.animations.pick_lock_hard_no_skill_deactivated = animations.lockpick
-
-	self.animations.weapon_arm = self.weapon_arm or {}
-	self.animations.weapon_arm.pistol = weapon_arm.pistol
 end

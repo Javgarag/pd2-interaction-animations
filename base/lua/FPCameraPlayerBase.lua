@@ -1,12 +1,6 @@
 UnitBase = UnitBase or class()
 FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
 
-FPCameraPlayerBase.IDS_WEAPON_ARM_STATE = Idstring("fps/interact/weapon_arm/hold")
-FPCameraPlayerBase.IDS_WEAPON_ARM_HOLD_REDIRECT = Idstring("weapon_arm_hold")
-FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT = Idstring("weapon_arm_move_blend")
-FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT = Idstring("weapon_arm_empty")
-FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_NO_BLEND_REDIRECT = Idstring("weapon_arm_empty_no_blend")
-
 function FPCameraPlayerBase:set_interaction_anim(interaction_anim)
 	self._interaction_anim = interaction_anim
 	return self._interaction_anim
@@ -19,28 +13,16 @@ end
 function FPCameraPlayerBase:clear_interaction_anim()
 	if self._interaction_anim then
 		self:set_interaction_anim(nil)
-
-		self:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT)
-		self:reset_weapon_arm_globals()
 	end
 end
 
 -- Avoid empty state if playing interact anim (for blending on segments)
+
 local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
 function FPCameraPlayerBase:anim_clbk_idle_full_blend()
 	if self._base_empty_state_allowed then	
 		orig_anim_clbk_idle_full_blend(self)
 	end
-end
-
-local orig_play_redirect = FPCameraPlayerBase.play_redirect
-function FPCameraPlayerBase:play_redirect(redirect_name, speed, offset_time)
-	if redirect_name ~= FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_REDIRECT and redirect_name ~= FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT then
-		self._unit:play_redirect(Idstring("offhand_empty_no_blend"))
-		self._unit:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_EMPTY_NO_BLEND_REDIRECT)
-	end
-
-	return orig_play_redirect(self, redirect_name, speed, offset_time)
 end
 
 function FPCameraPlayerBase:do_offhand_anim(is_spammy)
@@ -49,44 +31,17 @@ function FPCameraPlayerBase:do_offhand_anim(is_spammy)
 		return
 	end
 
+	self:attach_weapon_to_right_hand()
 	self:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
-	self:start_weapon_arm_interaction_anim(is_spammy)
 end
 
--- weapon_arm segment
+-- Weapon deattachment (rattlesnake, minigun, all of those special ones that are held with the left hand)
 
-function FPCameraPlayerBase:reset_weapon_arm_globals()
-	local asm = self._unit:anim_state_machine()
-	asm:set_global("int_anims_pistol", 0)
-end
-
-function FPCameraPlayerBase:start_weapon_arm_interaction_anim(is_spammy)
-	self:attach_weapon_to_hand()
-
-	local asm = self._unit:anim_state_machine()
-	if managers.player:is_current_weapon_of_category("pistol") then
-		asm:set_global("int_anims_pistol", 1)
-		self._weapon_arm_anim_td = tweak_data.interaction.animations.weapon_arm.pistol
-	end
-	
-	if not self._weapon_arm_anim_td then return end
-
-	-- buggy so disabled for now
-	--self:play_redirect(FPCameraPlayerBase.IDS_WEAPON_ARM_BLEND_REDIRECT)
-end
-
--- Weapon attachment
-
-function FPCameraPlayerBase:attach_weapon_to_hand()
+function FPCameraPlayerBase:attach_weapon_to_right_hand()
 	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	self._original_weapon_parent_bone = tweak_data.weapon[weap_unit:base()._name_id].use_data.align_place == "left_hand" and Idstring("a_weapon_left") or Idstring("a_weapon_right")
 	weap_unit:unlink()
-	self._unit:link(Idstring("RightHand"), weap_unit)
-end
-
-function FPCameraPlayerBase:attach_weapon_to_align()
-	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	weap_unit:unlink()
-	self._unit:link(Idstring("a_weapon_right"), weap_unit, weap_unit:orientation_object():name())
+	self._unit:link(Idstring("RightHand"), weap_unit) -- keep offset
 end
 
 -- Arm direction
@@ -118,7 +73,11 @@ function FPCameraPlayerBase:_update_rot(axis, unscaled_axis)
 end
 
 -- Animation callbacks
+
 function FPCameraPlayerBase:spawn_interaction_items()
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	weap_unit:set_visible(false)
+
 	for _, unit in pairs((self._interaction_anim and self._interaction_anim.units) or {}) do
 		local aligns = unit.align_objects or {
 			"a_weapon_left"
@@ -164,12 +123,25 @@ function FPCameraPlayerBase:anim_clbk_unspawn_interaction_items()
 	end
 
 	self._interaction_item_units = {}
+
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	weap_unit:set_visible(true)
 end
 
 function FPCameraPlayerBase:anim_clbk_offhand_exit()
 	self:anim_clbk_unspawn_interaction_items()
 	self:clear_interaction_anim()
 	self:clear_interact_object()
+end
+
+function FPCameraPlayerBase:anim_clbk_offhand_exit_full_blend()
+	if not self._original_weapon_parent_bone then return end
+
+	-- Reattach weapon to its align
+	local weap_unit = self._parent_unit:inventory():equipped_unit()
+	weap_unit:unlink()
+	self._unit:link(self._original_weapon_parent_bone, weap_unit, weap_unit:orientation_object():name())
+	self._original_weapon_parent_bone = nil
 end
 
 function FPCameraPlayerBase:anim_clbk_interact_hold_enter()
@@ -197,13 +169,4 @@ function FPCameraPlayerBase:anim_clbk_interact_interupt_exit()
 
 	self:clear_interaction_anim()
 	self:clear_interact_object()
-end
-
-function FPCameraPlayerBase:anim_clbk_weapon_arm_empty_full_blend()
-	self._unit:anim_state_machine():stop_segment(Idstring("weapon_arm"))
-	self:attach_weapon_to_align()
-end
-
-function FPCameraPlayerBase:anim_clbk_weapon_arm_anim_full_blend()
-	self:play_redirect_timeblend(self.IDS_WEAPON_ARM_STATE, self.IDS_WEAPON_ARM_HOLD_REDIRECT, 0, 0.5)
 end
