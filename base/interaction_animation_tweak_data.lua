@@ -32,7 +32,8 @@ local animations = {
 					"a_weapon_left"
 				}
 			}
-		}
+		},
+		hide_weapon = true
 	},
 	answer_radio = {
 		animation_state_machine_name = "answer_radio",
@@ -45,6 +46,7 @@ local animations = {
 			}
 		},
 		exit_when_time_left = 0.5,
+		hide_weapon = true
 	},
 	lockpick = {
 		animation_state_machine_name = "lockpick",
