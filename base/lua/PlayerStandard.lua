@@ -52,88 +52,48 @@ function PlayerStandard:_play_interact_redirect(t)
 	self._camera_unit:base():do_offhand_anim(self._spammy_interact)
 end
 
--- Timed interactions (hard overwrite)
-function PlayerStandard:_start_action_interact(t, input, timer, interact_object)
-	self:_interupt_action_reload(t)
-	self:_interupt_action_steelsight(t)
-	self:_interupt_action_running(t)
-	self:_interupt_action_charging_weapon(t)
-
-	local final_timer = timer
-	final_timer = managers.modifiers:modify_value("PlayerStandard:OnStartInteraction", final_timer, interact_object)
-	self._interact_expire_t = final_timer
-	local start_timer = 0
-	self._interact_params = {
-		object = interact_object,
-		timer = final_timer,
-		tweak_data = interact_object:interaction().tweak_data
-	}
-	
+-- Timed interactions
+Hooks:PostHook(PlayerStandard, "_start_action_interact", "int_anim_start_action_interact", function(self, t, input, timer, interact_object)
 	self._interaction_anim = self._camera_unit:base():set_interaction_anim(tweak_data.interaction.animations[self._interaction_unit:interaction().tweak_data])
 
 	if self._interaction_anim then
 		local tweak_data = self._equipped_unit:base():weapon_tweak_data()
 		self._unequip_weapon_on_interaction_expire_t = t + ((tweak_data.timers.unequip or 0.5) / (self._interaction_anim.unequip_speed_multiplier or 1))
 	end
-	self:_play_unequip_animation(self._interaction_anim and self._interaction_anim.unequip_speed_multiplier or nil)
-
-	managers.hud:show_interaction_bar(start_timer, final_timer)
-	managers.network:session():send_to_peers_synched("sync_teammate_progress", 1, true, self._interact_params.tweak_data, final_timer, false)
-	self._unit:network():send("sync_interaction_anim", true, self._interact_params.tweak_data)
-end
+end)
 
 -- (play specific interupt redirect)
-function PlayerStandard:_interupt_action_interact(t, input, complete)
+Hooks:PreHook(PlayerStandard, "_interupt_action_interact", "int_anim_interupt_action_interact", function(self, t, input, complete)
 	if self._interact_expire_t then
-		self:_clear_tap_to_interact()
+		self._in_interupt_action_interact = true
+	end
+end)
 
-		self._interact_expire_t = nil
+-- Equip/unequip
+Hooks:PreHook(PlayerStandard, "_play_equip_animation", "int_anim_play_equip_animation", function(self)
+	if self._in_interupt_action_interact then
+		self._in_interupt_action_interact = false
 
-		if alive(self._interact_params.object) then
-			self._interact_params.object:interaction():interact_interupt(self._unit, complete)
-		end
-
-		self._ext_camera:camera_unit():base():remove_limits()
-		self._interaction:interupt_action_interact(self._unit)
-		managers.network:session():send_to_peers_synched("sync_teammate_progress", 1, false, self._interact_params.tweak_data, 0, complete and true or false)
-
-		self._interact_params = nil
-
-		if self._interaction_anim and self._camera_unit:base().interaction_hold_anim_playing then  -- Changes to vanilla code are here (+ see FPCameraPlayerBase:anim_clbk_interact_interupt_exit)
+		if self._interaction_anim and self._camera_unit:base().interaction_hold_anim_playing then 
 			self._ext_camera:play_redirect(Idstring("interact_interupt"))
-		else
+		elseif self._interaction_anim then
 			self._camera_unit:base():anim_clbk_unspawn_interaction_items()
-			self:_play_equip_animation()
+			self._camera_unit:base():clear_interaction_anim()
+			self._camera_unit:base():clear_interact_object()
+
+			if self._interaction_anim.hide_weapon then
+				self._camera_unit:base():show_weapon()
+			end
 		end
-
-		managers.hud:hide_interaction_bar(complete)
-		self._unit:network():send("sync_interaction_anim", false, "") -- Vanilla third person animation
 	end
-end
+end)
 
--- Equip/unequip hard overwrites
-function PlayerStandard:_play_equip_animation(speed_multiplier)
-	local tweak_data = self._equipped_unit:base():weapon_tweak_data()
-	self._equip_weapon_expire_t = managers.player:player_timer():time() + (tweak_data.timers.equip or 0.7)
-	self._ext_camera:play_redirect(self:get_animation("equip"), speed_multiplier or nil)
-
-	self._equipped_unit:base():tweak_data_anim_stop("unequip")
-	self._equipped_unit:base():tweak_data_anim_play("equip", speed_multiplier or nil)
-
-	local interaction_anim = self._camera_unit:base():interaction_anim()
-	if interaction_anim then
-		if interaction_anim.hide_weapon then
-			self._camera_unit:base():show_weapon()
-		end
-		self._camera_unit:base():clear_interaction_anim()
-		self._camera_unit:base():clear_interact_object()
-	end
-end
-
-function PlayerStandard:_play_unequip_animation(speed_multiplier)
-	self._ext_camera:play_redirect(self:get_animation("unequip"), speed_multiplier or nil)
+-- resmod has its own speed_multipliers for this so unequip_speed_multiplier will NOT work with it installed! 
+function PlayerStandard:_play_unequip_animation()
+	local speed_multiplier = self._interaction_anim and self._interaction_anim.unequip_speed_multiplier or nil
+	self._ext_camera:play_redirect(self:get_animation("unequip"), speed_multiplier)
 	self._equipped_unit:base():tweak_data_anim_stop("equip")
-	self._equipped_unit:base():tweak_data_anim_play("unequip", speed_multiplier or nil)
+	self._equipped_unit:base():tweak_data_anim_play("unequip", speed_multiplier)
 end
 
 -- For PlayerCarry; cancelling an interaction causes bag drop as interaction has technically "ended" but self:_changing_weapons() returns false (as interaction interupt anim is playing).

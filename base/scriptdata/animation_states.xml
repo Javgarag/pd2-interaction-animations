@@ -111,6 +111,7 @@
 			-->
 			<state name="fps/interact_interupt" type="template_state" segment="base" speed="2.0"> 
 				<from_group name="fps/interact_hold" blend="5"/>
+				<block name="fps/equip"/>
 				<default blend="5"/>
 				
 				<keys>
