@@ -4,8 +4,6 @@ local animations = {
 	-- Offhand; remove this is if your animation is divided into parts.
 	insert_gensec_keycard = { -- Descriptive name for your animation that you'll use below, in the definition.
 		animation_state_machine_name = "insert_keycard", -- The name you used in all the other files.
-		hold_blend_in_t = 0.5, -- Configuration for the animation on the weapon arm; how long it will take for the arm to get to the "hold" position
-		hold_duration_t = 0.2, -- Configuration for the animation on the weapon arm; how long the hold should last
 		units = { -- If your animation uses units, add them here. If not, remove this section.
 			{
 				unit_path = "units/payday2/pickups/gen_pku_keycard/gen_pku_keycard", -- Path to the unit.
@@ -30,8 +28,11 @@ local animations = {
 				}
 			}
 		},
+
+		-- These are self explanatory
 		exit_when_time_left = 1,
-		hide_weapon = true
+		hide_weapon = true,
+		unequip_speed_multiplier = 1.0 -- Won't work with Restoration mod, since it handles varying unequip speeds on its own depending on skills (i think?)
 	}
 }
 
