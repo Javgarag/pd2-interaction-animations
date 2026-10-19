@@ -75,9 +75,6 @@ end
 -- Animation callbacks
 
 function FPCameraPlayerBase:spawn_interaction_items()
-	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	weap_unit:set_visible(false)
-
 	for _, unit in pairs((self._interaction_anim and self._interaction_anim.units) or {}) do
 		local aligns = unit.align_objects or {
 			"a_weapon_left"
@@ -123,9 +120,6 @@ function FPCameraPlayerBase:anim_clbk_unspawn_interaction_items()
 	end
 
 	self._interaction_item_units = {}
-
-	local weap_unit = self._parent_unit:inventory():equipped_unit()
-	weap_unit:set_visible(true)
 end
 
 function FPCameraPlayerBase:anim_clbk_offhand_exit()

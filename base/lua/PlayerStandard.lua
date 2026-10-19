@@ -34,7 +34,7 @@ function PlayerStandard:_play_interact_redirect(t)
 	self._state_data.interact_redirect_t = t + 1
 
 	local current_offhand_state = self._camera_unit:anim_state_machine():segment_state(Idstring("offhand"))
-	if current_offhand_state ~= Idstring("") and current_offhand_state ~= Idstring("fps/interact/offhand_empty") and current_offhand_state ~= Idstring("fps/interact/offhand_empty_no_blend") then
+	if current_offhand_state ~= Idstring("") and current_offhand_state ~= Idstring("fps/interact/offhand_empty") then
 		self._spammy_interact = true
 	else
 		self._spammy_interact = false

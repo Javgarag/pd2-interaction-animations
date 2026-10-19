@@ -150,7 +150,6 @@
 				</keys>
 				
 				<to name="offhand_empty" redirect="fps/interact/offhand_empty"/>
-				<to name="offhand_empty_no_blend" redirect="fps/interact/offhand_empty_no_blend"/>
 
 				<exit name="fps/interact/offhand_empty"/>
 			</state>
@@ -163,10 +162,6 @@
 				
 				<from_group name="fps/interact/offhand" blend="3"/>
 				<to name="offhand_empty" redirect=""/>
-			</state>
-
-			<state name="fps/interact/offhand_empty_no_blend" type="emptyloop" segment="offhand" speed="1.0"> 
-				<to name="offhand_empty_no_blend" redirect=""/>
 			</state>
 			
 			<state name="fps/interact/offhand/grab" type="once" segment="offhand" speed="1.0"> 
