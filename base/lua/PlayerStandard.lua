@@ -25,8 +25,7 @@ PlayerMovementState = PlayerMovementState or class()
 PlayerStandard = PlayerStandard or class(PlayerMovementState)
 
 -- Instant interactions
-function PlayerStandard:_play_interact_redirect(t)
-
+Hooks:OverrideFunction(PlayerStandard, "_play_interact_redirect", function(self, t)
 	if self._shooting or self._running or not self._equipped_unit:base():start_shooting_allowed() or self:_is_reloading() or self:_changing_weapon() or self:_is_meleeing() or self:in_steelsight() then
 		return
 	end
@@ -50,7 +49,7 @@ function PlayerStandard:_play_interact_redirect(t)
 	end
 
 	self._camera_unit:base():do_offhand_anim(self._spammy_interact)
-end
+end)
 
 -- Timed interactions
 Hooks:PostHook(PlayerStandard, "_start_action_interact", "int_anim_start_action_interact", function(self, t, input, timer, interact_object)
@@ -98,9 +97,9 @@ end
 
 -- For PlayerCarry; cancelling an interaction causes bag drop as interaction has technically "ended" but self:_changing_weapons() returns false (as interaction interupt anim is playing).
 -- More observations: self:_interacting() will always return false in PlayerCarry:_check_use_item() when interupting an interaction.
-function PlayerStandard:_changing_weapon()
+Hooks:OverrideFunction(PlayerStandard, "_changing_weapons", function(self)
 	return self._unequip_weapon_expire_t or self._equip_weapon_expire_t or self._camera_unit:base().interaction_interupt_anim_playing
-end
+end)
 
 -- Called every frame to check if the unequip interaction timer has expired
 function PlayerStandard:_update_unequip_interaction_timers(t)

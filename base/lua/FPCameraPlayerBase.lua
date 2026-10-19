@@ -1,6 +1,8 @@
 UnitBase = UnitBase or class()
 FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
 
+-- These 3 are ours
+
 function FPCameraPlayerBase:set_interaction_anim(interaction_anim)
 	self._interaction_anim = interaction_anim
 	return self._interaction_anim
@@ -19,13 +21,13 @@ end
 -- Avoid empty state if playing interact anim (for blending on segments)
 
 local orig_anim_clbk_idle_full_blend = FPCameraPlayerBase.anim_clbk_idle_full_blend
-function FPCameraPlayerBase:anim_clbk_idle_full_blend()
+Hooks:OverrideFunction(FPCameraPlayerBase, "anim_clbk_idle_full_blend", function(self)
 	if self._base_empty_state_allowed then	
 		orig_anim_clbk_idle_full_blend(self)
 	end
-end
+end)
 
-function FPCameraPlayerBase:do_offhand_anim(is_spammy)
+function FPCameraPlayerBase:do_offhand_anim(is_spammy) -- ours
 	if not self._interaction_anim then
 		log("[FPCameraPlayerBase:do_offhand_anim] No interaction anim set")
 		return
@@ -37,7 +39,7 @@ end
 
 -- Weapon deattachment (rattlesnake, minigun, all of those special ones that are held with the left hand)
 
-function FPCameraPlayerBase:attach_weapon_to_right_hand()
+function FPCameraPlayerBase:attach_weapon_to_right_hand() -- ours
 	local weap_unit = self._parent_unit:inventory():equipped_unit()
 	self._original_weapon_parent_bone = tweak_data.weapon[weap_unit:base()._name_id].use_data.align_place == "left_hand" and Idstring("a_weapon_left") or Idstring("a_weapon_right")
 	weap_unit:unlink()
@@ -55,7 +57,7 @@ function FPCameraPlayerBase:clear_interact_object()
 end
 
 local orig_update_rot = FPCameraPlayerBase._update_rot
-function FPCameraPlayerBase:_update_rot(axis, unscaled_axis)
+Hooks:OverrideFunction(FPCameraPlayerBase, "_update_rot", function(self, axis, unscaled_axis)
 	orig_update_rot(self, axis, unscaled_axis)
 	if not self._interact_object then return end
 
@@ -70,9 +72,9 @@ function FPCameraPlayerBase:_update_rot(axis, unscaled_axis)
 	mrotation.multiply(final_rot, interact_arm_offset_rot, arm_rot)
 
 	self:set_rotation(final_rot)
-end
+end)
 
--- Animation callbacks
+-- Animation callbacks (everything here is ours)
 
 function FPCameraPlayerBase:spawn_interaction_items()
 	for _, unit in pairs((self._interaction_anim and self._interaction_anim.units) or {}) do

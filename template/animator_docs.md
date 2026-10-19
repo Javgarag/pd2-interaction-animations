@@ -7,7 +7,7 @@ There are two types of supported animations:
 **You can also use any unit in your animation, and spawn it later**. Animations for deploying equipment are not currently supported, but can be added in a later version of the base mod.
 
 After you've created your animation, it's time to make it available. Revise the following:
-*Inside all of the template files, you have every structure you'll need; use common sense to remove anything you don't need for your animation(s). *
+*Inside all of the template files, you have every structure you'll need; use common sense to remove anything you don't need for your animation(s).*
 
 * Change the mod name in `mod.txt` and `main.xml`, and add any additional information (contact, author, etc).
 * Inside `main.xml`, add the paths to your animations.
@@ -22,3 +22,5 @@ After you've created your animation, it's time to make it available. Revise the 
 		* In *SECTION #3*, add the names of your `interact_exit` and `interact_interupt` states to the `to` node's `redirect` value.
 * Inside `scriptdata/animation_subset.xml`, point the names you added before to the `anim` nodes (so your animation name, with/without suffixes) to their corresponding files; you should have three for long interactions, and one for instantaneous ones.
 * Inside `interaction_animation_tweak_data.lua`, follow the commented instructions.
+
+Make sure your animation mod's priority is no higher than 549. The default is 500 and should be enough for compatibility.
