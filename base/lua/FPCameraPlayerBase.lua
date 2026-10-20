@@ -92,6 +92,9 @@ function FPCameraPlayerBase:spawn_interaction_items()
 
 			if unit.material_config then
 				spawned_unit:set_material_config(Idstring(unit.material_config), true)
+				if spawned_unit.interaction then
+					spawned_unit:interaction():refresh_material()
+				end
 			end
 
 			for i = 0, spawned_unit:num_bodies() - 1 do
