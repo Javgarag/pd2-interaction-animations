@@ -3,7 +3,7 @@
 	"description" : "Adds first-person animations to various interactions.",
 	"author" : "Javgarag, PlayBONK",
 	"contact" : "Discord: javgarag, playbonk",
-	"version" : "1.0.2",
+	"version" : "1.0.4",
 	"priority" : 550,
 	"blt_version" : 2,
 	"color" : "255 128 0",

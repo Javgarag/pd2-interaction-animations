@@ -92,7 +92,7 @@ function FPCameraPlayerBase:spawn_interaction_items()
 
 			if unit.material_config then
 				spawned_unit:set_material_config(Idstring(unit.material_config), true)
-				if spawned_unit.interaction then
+				if spawned_unit.interaction and spawned_unit:interaction() then
 					spawned_unit:interaction():refresh_material()
 				end
 			end
