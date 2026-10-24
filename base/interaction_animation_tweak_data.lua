@@ -7,7 +7,7 @@ local animations = {
 		-- hold_duration_t = 0.2,
 		units = {
 			{
-				unit_path = "units/payday2/pickups/gen_pku_keycard/gen_pku_keycard",  -- For per-object rigging, see FPCameraPlayerBase:spawn_melee_item
+				unit_path = "mods/int_anim/units/gen_pku_keycard/gen_pku_keycard",  -- For per-object rigging, see FPCameraPlayerBase:spawn_melee_item
 				unit_sequence = "disable_interaction",
 				material_config = "mods/int_anim/material_configs/gen_pku_keycard",
 				align_objects = {
