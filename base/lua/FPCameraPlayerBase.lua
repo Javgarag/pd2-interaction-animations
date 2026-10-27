@@ -59,7 +59,7 @@ end
 local orig_update_rot = FPCameraPlayerBase._update_rot
 Hooks:OverrideFunction(FPCameraPlayerBase, "_update_rot", function(self, axis, unscaled_axis)
 	orig_update_rot(self, axis, unscaled_axis)
-	if not self._interact_object then return end
+	if not alive(self._interact_object) then return end
 
 	local interact_position = self._interact_object:interaction():interact_position()
 	local arm_position = self._unit:position()
