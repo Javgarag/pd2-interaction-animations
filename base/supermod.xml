@@ -1,7 +1,71 @@
 <?xml version="1.0"?>
-<mod>
+<mod name="Interaction Animations"
+	description="Adds first-person animations to various interactions. Also acts as a framework for other mods implementing their own interaction animations."
+	author="Javgarag, PlayBONK"
+	contact="Discord: javgarag, playbonk"
+	priority="550"
+	color="255 128 0"
+	needs_restart="true"
+	vr_disabled="true"
+	version="1.1.0">
+
+	<updates>
+        <update identifier="pd2_interaction_animations" meta="https://github.com/Javgarag/pd2-mods/releases/download/metafiles/pd2_interaction_animations.meta.json"/>
+    </updates>
+
+	<hooks>
+		<post hook_id="lib/units/beings/player/states/playerstandard" script_path="lua/PlayerStandard.lua"/>
+        <post hook_id="lib/units/beings/player/states/playercarry" script_path="lua/PlayerCarry.lua"/>
+        <post hook_id="lib/units/cameras/fpcameraplayerbase" script_path="lua/FPCameraPlayerBase.lua"/>
+        <post hook_id="lib/managers/menumanager" script_path="lua/options_menu.lua"/>
+        <post hook_id="lib/tweak_data/interactiontweakdata" script_path="interaction_animation_tweak_data.lua"/>
+	</hooks>
+
 	<tweak definition="scriptdata/animation_state_machine.xml" />
 	<tweak definition="scriptdata/animation_states.xml" />
 	<tweak definition="scriptdata/animation_subset.xml" />
 	<tweak definition="scriptdata/animation_def.xml" />
+	
+	<assets base_path="assets/">
+		<!-- Animations -->
+		<file name="anims/fps/interacts/keycard_insert.animation"/>
+		<file name="anims/fps/interacts/grab.animation"/>
+
+		<file name="anims/fps/interacts/fix_drill/fix_drill_enter.animation"/>
+		<file name="anims/fps/interacts/fix_drill/fix_drill_loop.animation"/>
+		<file name="anims/fps/interacts/fix_drill/fix_drill_exit.animation"/>
+
+		<file name="anims/fps/interacts/answer_radio/answer_radio_enter.animation"/>
+		<file name="anims/fps/interacts/answer_radio/answer_radio_loop.animation"/>
+		<file name="anims/fps/interacts/answer_radio/answer_radio_exit.animation"/>
+
+		<file name="anims/fps/interacts/lockpick/lockpick_enter.animation"/>
+		<file name="anims/fps/interacts/lockpick/lockpick_loop.animation"/>
+		<file name="anims/fps/interacts/lockpick/lockpick_exit.animation"/>
+
+		<!-- Units -->
+		<file name="mods/int_anim/units/gen_pku_keycard/gen_pku_keycard.unit"/>
+
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.cooked_physics"/>
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.model"/>
+		<file name="mods/int_anim/material_configs/fps_interact_radio.material_config"/>
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.object"/>
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.unit"/>
+
+		<file name="mods/int_anim/units/fps_lockpick/fps_lockpick.cooked_physics"/>
+		<file name="mods/int_anim/units/fps_lockpick/fps_lockpick.model"/>
+		<file name="mods/int_anim/material_configs/fps_lockpick.material_config"/>
+		<file name="mods/int_anim/units/fps_lockpick/fps_lockpick.object"/>
+		<file name="mods/int_anim/units/fps_lockpick/fps_lockpick.unit"/>
+
+		<file name="mods/int_anim/units/fps_tension_tool/fps_tension_tool.cooked_physics"/>
+		<file name="mods/int_anim/units/fps_tension_tool/fps_tension_tool.model"/>
+		<file name="mods/int_anim/material_configs/fps_lockpick.material_config"/>
+		<file name="mods/int_anim/units/fps_tension_tool/fps_tension_tool.object"/>
+		<file name="mods/int_anim/units/fps_tension_tool/fps_tension_tool.unit"/>
+
+		<!-- Depth scaling material configs -->
+		<file name="mods/int_anim/material_configs/gen_pku_keycard.material_config"/>
+		<file name="mods/int_anim/material_configs/glc_prop_contruction_tool_wrench01.material_config"/>
+	</assets>
 </mod>

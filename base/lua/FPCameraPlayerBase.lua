@@ -29,12 +29,14 @@ end)
 
 function FPCameraPlayerBase:do_offhand_anim(is_spammy) -- ours
 	if not self._interaction_anim then
-		log("[FPCameraPlayerBase:do_offhand_anim] No interaction anim set")
+		log("[Interaction Animations] [FPCameraPlayerBase:do_offhand_anim] No interaction anim set")
 		return
 	end
 
-	self:attach_weapon_to_right_hand()
-	self:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] then
+		self:attach_weapon_to_right_hand()
+		self:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
+	end
 end
 
 -- Weapon deattachment (rattlesnake, minigun, all of those special ones that are held with the left hand)
@@ -86,7 +88,14 @@ function FPCameraPlayerBase:spawn_interaction_items()
 		for _, align in ipairs(aligns) do
 			local align_obj_name = Idstring(align)
 			local align_obj = self._unit:get_object(align_obj_name)
-			local spawned_unit = World:spawn_unit(Idstring(unit.unit_path), Vector3(), Rotation()) -- CRASH HERE? Interaction unit not loaded; did you forget to add it in main.xml?
+
+			if not DB:has(Idstring("unit"), Idstring(unit.unit_path)) then
+				log("[Interaction Animations] [FPCameraPlayerBase:spawn_interaction_items] Interaction anim unit doesn't exist, won't spawn! Is it properly defined in supermod.xml?")
+				return
+			end
+
+			managers.dyn_resource:load(Idstring("unit"), Idstring(unit.unit_path), DynamicResourceManager.DYN_RESOURCES_PACKAGE, false)
+			local spawned_unit = World:spawn_unit(Idstring(unit.unit_path), Vector3(), Rotation())
 
 			spawned_unit:anim_stop()
 
