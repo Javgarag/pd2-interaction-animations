@@ -9,8 +9,8 @@ There are two types of supported animations:
 After you've created your animation, it's time to make it available. Revise the following:
 *Inside all of the template files, you have every structure you'll need; use common sense to remove anything you don't need for your animation(s).*
 
-* Change the mod name in `mod.txt` and `main.xml`, and add any additional information (contact, author, etc).
-* Inside `main.xml`, add the paths to your animations.
+* Change the mod's name in `supermod.xml`, and add any additional information (contact, author, etc).
+* Inside `supermod.xml`, add the paths to your animations. Follow the comments.
 	* If your animation makes use of an unit (e.g. a keycard), add those paths too. **However, you need to derive a material config from the unit's original one that uses templates that include `DEPTH_SCALING` for its materials, so it is properly drawn in the game. See the MWS wiki on this file format for more info.**
 * Decide on a name for the animation, it needs to be unique enough so it doesn't get used by anything else. Use it consistently inside the following files.
 * Inside `scriptdata/animation_states.xml`, in *SECTION #1*, add that name to the `name` value and change the `redirect` value to include that same name at the end. Now, depending on your animation, proceed differently:
@@ -24,3 +24,5 @@ After you've created your animation, it's time to make it available. Revise the 
 * Inside `interaction_animation_tweak_data.lua`, follow the commented instructions.
 
 Make sure your animation mod's priority is no higher than 549. The default is 500 and should be enough for compatibility.
+
+If you plan on doing complex triggers during your animations, reading the [Animation State Machine](https://wiki.modworkshop.net/books/payday-2-mod-creation/page/animation-state-machine) wiki page is recommended.

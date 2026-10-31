@@ -1,5 +1,45 @@
 <?xml version="1.0"?>
-<mod>
-	<tweak definition="scriptdata/animation_states.xml" />
-	<tweak definition="scriptdata/animation_subset.xml" />
+<mod name="Interaction Animation Template"
+	description=""
+	author=""
+	priority="500"
+	version="1.0.0">
+	
+	<tweak definition="scriptdata/animation_states.xml"/>
+	<tweak definition="scriptdata/animation_subset.xml"/>
+	
+	<hooks script_path="mod.lua">
+		<post hook_id="lib/tweak_data/interactiontweakdata"/>
+	</hooks>
+	
+	<assets base_path="assets/">
+		<!-- Animations -->
+		
+		<!-- Instant interactions -->
+		<file name="anims/fps/interacts/keycard_insert.animation"/>
+
+		<!-- Long interactions -->
+		<file name="anims/fps/interacts/fix_drill/fix_drill_enter.animation"/>
+		<file name="anims/fps/interacts/fix_drill/fix_drill_loop.animation"/>
+		<file name="anims/fps/interacts/fix_drill/fix_drill_exit.animation"/>
+
+		<!-- Units -->
+		
+		<!-- If your unit is vanilla, you don't need to add anything here. -->
+		<!-- There is an exception to this however; units that have <network sync="spawn"/> will need that line removed. -->
+		<!-- In this case, this keycard .unit file is identical to its vanilla counterpart, only with that line commented out. -->
+		<file name="mods/int_anim/units/gen_pku_keycard/gen_pku_keycard.unit"/>
+
+		<!-- If your unit is custom, you need to add all of its files, and an empty cooked_physics with the same name as the model. -->
+		<!-- These next 5 files are not included in this template, but should give you an idea of the format. -->
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.cooked_physics"/>
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.model"/>
+		<file name="mods/int_anim/material_configs/fps_interact_radio.material_config"/>
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.object"/>
+		<file name="mods/int_anim/units/fps_interact_radio/fps_interact_radio.unit"/>
+
+		<!-- Depth scaling material configs -->
+		
+		<file name="mods/int_anim/material_configs/gen_pku_keycard.material_config"/>
+	</assets>
 </mod>
