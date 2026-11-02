@@ -9,6 +9,7 @@
 		<!-- Animations -->
 		<file name="anims/fps/interacts/keycard_insert.animation"/>
 		<file name="anims/fps/interacts/grab.animation"/>
+		<file name="anims/fps/interacts/press_button.animation"/>
 
 		<file name="anims/fps/interacts/fix_drill/fix_drill_enter.animation"/>
 		<file name="anims/fps/interacts/fix_drill/fix_drill_loop.animation"/>
@@ -21,6 +22,10 @@
 		<file name="anims/fps/interacts/lockpick/lockpick_enter.animation"/>
 		<file name="anims/fps/interacts/lockpick/lockpick_loop.animation"/>
 		<file name="anims/fps/interacts/lockpick/lockpick_exit.animation"/>
+		
+		<file name="anims/fps/interacts/scarface_phone/scarface_phone_enter.animation"/>
+		<file name="anims/fps/interacts/scarface_phone/scarface_phone_loop.animation"/>
+		<file name="anims/fps/interacts/scarface_phone/scarface_phone_exit.animation"/>
 
 		<!-- Units -->
 		<file name="mods/int_anim/units/gen_pku_keycard/gen_pku_keycard.unit"/>
@@ -42,6 +47,12 @@
 		<file name="mods/int_anim/material_configs/fps_lockpick.material_config"/>
 		<file name="mods/int_anim/units/fps_tension_tool/fps_tension_tool.object"/>
 		<file name="mods/int_anim/units/fps_tension_tool/fps_tension_tool.unit"/>
+		
+		<file name="mods/int_anim/units/fps_scarface_phone/fps_scarface_phone.cooked_physics"/>
+		<file name="mods/int_anim/units/fps_scarface_phone/fps_scarface_phone.model"/>
+		<file name="mods/int_anim/material_configs/fps_scarface_phone.material_config"/>
+		<file name="mods/int_anim/units/fps_scarface_phone/fps_scarface_phone.object"/>
+		<file name="mods/int_anim/units/fps_scarface_phone/fps_scarface_phone.unit"/>
 
 		<!-- Depth scaling material configs -->
 		<file name="mods/int_anim/material_configs/gen_pku_keycard.material_config"/>

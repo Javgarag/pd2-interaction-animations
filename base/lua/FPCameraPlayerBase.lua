@@ -33,7 +33,13 @@ function FPCameraPlayerBase:do_offhand_anim(is_spammy) -- ours
 		return
 	end
 
-	if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] then
+	if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] == nil then
+		-- result of updating the mod and adding new animations, without having opened options menu
+		InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] = true
+		InteractionAnimationsConfig:Save()
+	end
+
+	if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name]  then
 		self:attach_weapon_to_right_hand()
 		self:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
 	end

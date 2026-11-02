@@ -112,6 +112,12 @@ function PlayerStandard:_update_unequip_interaction_timers(t)
 
 		self._camera_unit:base().has_unequipped_for_interaction = true
 
+		if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] == nil then
+			-- result of updating the mod and adding new animations, without having opened options menu
+			InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] = true
+			InteractionAnimationsConfig:Save()
+		end
+
 		if self._interact_params and self._interact_params.timer > 0 and InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] then
 			self._camera_unit:base():set_interact_object(self._interact_params.object)
 			self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))

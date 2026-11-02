@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<dynamic_object>
+	<diesel materials="mods/int_anim/material_configs/fps_scarface_phone" orientation_object="rp_scarface_telephone" />
+	<graphics>
+        <object name="g_g" enabled="true" />
+    </graphics>
+</dynamic_object>

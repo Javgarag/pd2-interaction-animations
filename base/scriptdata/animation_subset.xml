@@ -7,7 +7,8 @@
     <target>
         <anim name="insert_keycard" file="anims/fps/interacts/keycard_insert" blend_set="offhand"/>
 		<anim name="grab" file="anims/fps/interacts/grab" blend_set="offhand"/>
-		
+		<anim name="press_button" file="anims/fps/interacts/press_button" blend_set="offhand"/>
+
 		<anim name="fix_drill_enter" file="anims/fps/interacts/fix_drill/fix_drill_enter" blend_set="all"/>
 		<anim name="fix_drill_loop" file="anims/fps/interacts/fix_drill/fix_drill_loop" blend_set="all"/>
 		<anim name="fix_drill_exit" file="anims/fps/interacts/fix_drill/fix_drill_exit" blend_set="all"/>
@@ -19,5 +20,9 @@
 		<anim name="lockpick_enter" file="anims/fps/interacts/lockpick/lockpick_enter" blend_set="all"/>
 		<anim name="lockpick_loop" file="anims/fps/interacts/lockpick/lockpick_loop" blend_set="all"/>
 		<anim name="lockpick_exit" file="anims/fps/interacts/lockpick/lockpick_exit" blend_set="all"/>
+		
+		<anim name="scarface_phone_enter" file="anims/fps/interacts/scarface_phone/scarface_phone_enter" blend_set="all"/>
+		<anim name="scarface_phone_loop" file="anims/fps/interacts/scarface_phone/scarface_phone_loop" blend_set="all"/>
+		<anim name="scarface_phone_exit" file="anims/fps/interacts/scarface_phone/scarface_phone_exit" blend_set="all"/>
     </target>
 </tweak>

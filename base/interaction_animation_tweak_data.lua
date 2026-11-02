@@ -3,8 +3,6 @@ InteractionTweakData = InteractionTweakData or class()
 local animations = {
 	insert_gensec_keycard = {
 		animation_state_machine_name = "insert_keycard",
-		hold_blend_in_t = 0.55,
-		-- hold_duration_t = 0.2,
 		units = {
 			{
 				unit_path = "mods/int_anim/units/gen_pku_keycard/gen_pku_keycard",  -- For per-object rigging, see FPCameraPlayerBase:spawn_melee_item
@@ -18,12 +16,13 @@ local animations = {
 	},
 	grab = {
 		animation_state_machine_name = "grab",
-		hold_blend_in_t = 0.55,
-		-- hold_duration_t = 0.1,
+	},
+	press_button = {
+		animation_state_machine_name = "press_button",
 	},
 	fix_drill = {
 		animation_state_machine_name = "fix_drill",
-		exit_when_time_left = 0,
+		exit_when_time_left = 0.5,
 		units = {
 			{
 				unit_path = "units/pd2_dlc_glace/props/glc_prop_construction_tool/glc_prop_contruction_tool_wrench01",
@@ -65,6 +64,19 @@ local animations = {
 			}
 		},
 		exit_when_time_left = 0.25,
+		hide_weapon = true
+	},
+	scarface_phone = {
+		animation_state_machine_name = "scarface_phone",
+		units = {
+			{
+				unit_path = "mods/int_anim/units/fps_scarface_phone/fps_scarface_phone",
+				align_objects = {
+					"a_weapon_left"
+				}
+			}
+		},
+		exit_when_time_left = 1.2,
 		hide_weapon = true
 	}
 }
@@ -176,6 +188,7 @@ function InteractionTweakData:init(tweak_data)
 	self.animations.secret_stash_saw_jammed = animations.fix_drill
 	self.animations.gen_int_saw_jammed = animations.fix_drill
 	self.animations.drill_upgrade = animations.fix_drill
+	self.animations.gen_int_saw_upgrade = animations.fix_drill
 
 	self.animations.corpse_alarm_pager = animations.answer_radio
 
@@ -198,4 +211,57 @@ function InteractionTweakData:init(tweak_data)
 	self.animations.no_interaction = animations.lockpick
 	self.animations.pick_lock_x_axis = animations.lockpick
 	self.animations.pick_lock_hard_no_skill_deactivated = animations.lockpick
+
+	self.animations.hold_phone_call_office = animations.scarface_phone
+
+	self.animations.push_button_secret = animations.press_button
+	self.animations.push_button_des = animations.press_button
+	self.animations.fex_press_frog_symbol = animations.press_button
+	self.animations.fex_press_ant_symbol = animations.press_button
+	self.animations.fex_press_bat_symbol = animations.press_button
+	self.animations.fex_press_boar_symbol = animations.press_button
+	self.animations.fex_press_bunny_symbol = animations.press_button
+	self.animations.fex_press_butterfly_symbol = animations.press_button
+	self.animations.fex_press_crab_symbol = animations.press_button
+	self.animations.fex_press_crocodile_symbol = animations.press_button
+	self.animations.fex_press_dog_symbol = animations.press_button
+	self.animations.fex_press_fish_symbol = animations.press_button
+	self.animations.fex_press_jaguar_symbol = animations.press_button
+	self.animations.fex_press_lizard_symbol = animations.press_button
+	self.animations.fex_press_millipede_symbol = animations.press_button
+	self.animations.fex_press_monkey_symbol = animations.press_button
+	self.animations.fex_press_owl_symbol = animations.press_button
+	self.animations.fex_press_snail_symbol = animations.press_button
+	self.animations.fex_press_snake_symbol = animations.press_button
+	self.animations.fex_press_spider_symbol = animations.press_button
+	self.animations.fex_press_squirrel_symbol = animations.press_button
+	self.animations.fex_press_turtle_symbol = animations.press_button
+	self.animations.sand_button_number_sign = animations.press_button
+	self.animations.pent_press_call_elevator = animations.press_button
+	self.animations.pent_kitchen_elevator = animations.press_button
+	self.animations.ranc_press_turn_off_radio = animations.press_button
+	self.animations.deep_press_test_oil_sample = animations.press_button
+	self.animations.deep_press_achi_intercom_phone = animations.press_button
+	self.animations.button_infopad = animations.press_button
+	self.animations.cas_button_01 = animations.press_button
+	self.animations.cas_button_02 = animations.press_button
+	self.animations.cas_button_03 = animations.press_button
+	self.animations.cas_button_04 = animations.press_button
+	self.animations.cas_button_05 = animations.press_button
+	self.animations.cas_button_06 = animations.press_button
+	self.animations.cas_button_07 = animations.press_button
+	self.animations.cas_button_08 = animations.press_button
+	self.animations.cas_button_09 = animations.press_button
+	self.animations.cas_button_0 = animations.press_button
+	self.animations.cas_button_clear = animations.press_button
+	self.animations.cas_button_enter = animations.press_button
+	self.animations.press_play_music = animations.press_button
+	self.animations.press_start_weapon_course = animations.press_button
+	self.animations.press_play_jacket_sound = animations.press_button
+	self.animations.press_touch_book = animations.press_button
+	self.animations.press_call_elevator = animations.press_button
+	self.animations.pent_press_signal_operator = animations.press_button
+	self.animations.press_play_jacket_sound = animations.press_button
+	self.animations.press_play_jacket_sound = animations.press_button
+	self.animations.barrier_numpad = animations.press_button
 end

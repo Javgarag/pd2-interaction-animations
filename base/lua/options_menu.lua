@@ -66,7 +66,7 @@ Hooks:Add("MenuManagerPopulateCustomMenus", "MenuManagerPopulateCustomMenus_inta
                 localized = false,
                 title = v.animation_state_machine_name,
                 desc = "Whether the animation with ID ".. tostring(name) .. " should be enabled",
-                value = InteractionAnimationsConfig._data.anims_enabled[name],
+                value = InteractionAnimationsConfig._data.anims_enabled[name] ~= nil and InteractionAnimationsConfig._data.anims_enabled[name] or true,
                 callback = "callback_disable_anim_".. name
             })
 
