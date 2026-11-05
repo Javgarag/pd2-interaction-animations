@@ -35,7 +35,8 @@
 				<to name="interact_interupt" redirect="fps/interact_interupt/fix_drill"/>	
 			
 				<anim name="fix_drill_loop"/>
-			
+
+				<!-- Example of an animation trigger, this one plays a sound -->
 				<keys>
 					<key at="trigger" trigger="hit" callback="play_sound" class_name="base" param1="impact_break_gen_small_object"/>
 				</keys>
