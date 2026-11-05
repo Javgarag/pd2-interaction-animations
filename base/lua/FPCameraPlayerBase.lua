@@ -33,12 +33,6 @@ function FPCameraPlayerBase:do_offhand_anim(is_spammy) -- ours
 		return
 	end
 
-	if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] == nil then
-		-- result of updating the mod and adding new animations, without having opened options menu
-		InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] = true
-		InteractionAnimationsConfig:Save()
-	end
-
 	if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name]  then
 		self:attach_weapon_to_right_hand()
 		self:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
@@ -158,12 +152,20 @@ function FPCameraPlayerBase:anim_clbk_offhand_exit_full_blend()
 	self._original_weapon_parent_bone = nil
 end
 
+function FPCameraPlayerBase:anim_clbk_interact_enter_enter()
+	self:spawn_interaction_items()
+end
+
 function FPCameraPlayerBase:anim_clbk_interact_hold_enter()
 	self.interaction_hold_anim_playing = true
 end
 
 function FPCameraPlayerBase:interact_hold_early_exit()
 	self:play_redirect(Idstring("interact_exit"))
+end
+
+function FPCameraPlayerBase:anim_clbk_interact_exit_exit()
+	self:anim_clbk_unspawn_interaction_items()
 end
 
 function FPCameraPlayerBase:anim_clbk_interact_hold_exit()
@@ -175,6 +177,8 @@ function FPCameraPlayerBase:anim_clbk_interact_interupt_enter()
 end
 
 function FPCameraPlayerBase:anim_clbk_interact_interupt_exit()
+	self:anim_clbk_unspawn_interaction_items()
+
 	self.interaction_interupt_anim_playing = false
 
 	if self._interaction_anim.hide_weapon then

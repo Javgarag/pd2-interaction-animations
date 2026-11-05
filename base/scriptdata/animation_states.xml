@@ -33,7 +33,7 @@
 					<key at="trigger" trigger="wp_foley_generic_back_in_hand" callback="play_sound" class_name="base" param1="wp_foley_generic_back_in_hand"/>
 					<key at="trigger" trigger="wp_foley_generic_tilt" callback="play_sound" class_name="base" param1="wp_foley_generic_tilt"/>
 				
-					<key at="enter" callback="spawn_interaction_items" class_name="base"/>
+					<key at="enter" callback="anim_clbk_interact_enter_enter" class_name="base"/>
 				</keys>
 			</state>
 			
@@ -108,7 +108,7 @@
 				<keys>
 					<key at="trigger" trigger="wp_foley_generic_tilt" callback="play_sound" class_name="base" param1="wp_foley_generic_tilt"/>
 					<key at="trigger" trigger="unspawn_interaction_items" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
-					<key at="exit" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
+					<key at="exit" callback="anim_clbk_interact_exit_exit" class_name="base"/>
 				</keys>
 			</state>
 			
@@ -141,7 +141,6 @@
 					<key at="trigger" trigger="wp_foley_generic_tilt" callback="play_sound" class_name="base" param1="wp_foley_generic_tilt"/>
 					
 					<key at="enter" callback="anim_clbk_interact_interupt_enter" class_name="base"/>
-					<key at="exit" callback="anim_clbk_unspawn_interaction_items" class_name="base"/>
 					<key at="exit" callback="anim_clbk_interact_interupt_exit" class_name="base"/>
 					<key at="exit" callback="anim_clbk_play_weapon_anim" class_name="base" param1="equip"/>
 				</keys>

@@ -61,21 +61,27 @@ Hooks:PostHook(PlayerStandard, "_start_action_interact", "int_anim_start_action_
 	end
 end)
 
--- (play specific interupt redirect)
+-- This isn't really an "interupt" in the way I've defined it for this mod; rather, it just refers to the interaction finishing in any way, so either fully completed or forced to exit.
+-- The reason for doing it this way is that it allows to easily control whether our faster "interupt" plays over the equip anim first. See the next hook.
 Hooks:PreHook(PlayerStandard, "_interupt_action_interact", "int_anim_interupt_action_interact", function(self, t, input, complete)
 	if self._interact_expire_t then
-		self._in_interupt_action_interact = true
+		self._interaction_about_to_end = true
 	end
 end)
 
 -- Equip/unequip
+
 Hooks:PreHook(PlayerStandard, "_play_equip_animation", "int_anim_play_equip_animation", function(self)
-	if self._in_interupt_action_interact then
-		self._in_interupt_action_interact = false
+	if self._interaction_about_to_end then
+		-- By this point normal gameplay has resumed
+		self._interaction_about_to_end = false
 
 		if self._interaction_anim and self._camera_unit:base().interaction_hold_anim_playing then 
-			self._ext_camera:play_redirect(Idstring("interact_interupt"))
+			self._ext_camera:play_redirect(Idstring("interact_interupt")) -- Before re-equipping, we exit in style
+			
+			-- Here, since the interact_interupt state blocks fps/equip, it'll wait for its exit (see the animation_states)
 		elseif self._interaction_anim then
+			-- If we get here, the interaction was fully completed
 			self._camera_unit:base():anim_clbk_unspawn_interaction_items()
 			self._camera_unit:base():clear_interaction_anim()
 			self._camera_unit:base():clear_interact_object()
@@ -83,7 +89,12 @@ Hooks:PreHook(PlayerStandard, "_play_equip_animation", "int_anim_play_equip_anim
 			if self._interaction_anim.hide_weapon then
 				self._camera_unit:base():show_weapon()
 			end
+
+			-- After this, the equip animation will play...
 		end
+
+		-- Regardless of what we do, let's return the weapon to its stance
+		self:_stance_entered()
 	end
 end)
 
@@ -112,17 +123,12 @@ function PlayerStandard:_update_unequip_interaction_timers(t)
 
 		self._camera_unit:base().has_unequipped_for_interaction = true
 
-		if InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] == nil then
-			-- result of updating the mod and adding new animations, without having opened options menu
-			InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] = true
-			InteractionAnimationsConfig:Save()
-		end
-
 		if self._interact_params and self._interact_params.timer > 0 
 		and InteractionAnimationsConfig._data.anims_enabled[self._interaction_anim.animation_state_machine_name] 
 		and not managers.player:has_category_upgrade("player", "no_interrupt_interaction") -- Resmod's skill that allows shooting during interacts
 		then
 			self._camera_unit:base():set_interact_object(self._interact_params.object)
+			self:_stance_entered(true)
 			self._ext_camera:play_redirect(Idstring(self._interaction_anim.animation_state_machine_name))
 
 			if self._interaction_anim.hide_weapon then

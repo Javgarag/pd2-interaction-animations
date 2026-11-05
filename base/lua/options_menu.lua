@@ -60,13 +60,18 @@ Hooks:Add("MenuManagerPopulateCustomMenus", "MenuManagerPopulateCustomMenus_inta
     for _, v in pairs(tweak_data.interaction.animations or {}) do
         local name = v.animation_state_machine_name
         if not processed_anims[name] then
+            if InteractionAnimationsConfig._data.anims_enabled[name] == nil then
+                InteractionAnimationsConfig._data.anims_enabled[name] = true
+                InteractionAnimationsConfig:Save()
+            end
+
             MenuHelper:AddToggle({
-                id = tostring(v.animation_state_machine_name),
+                id = name,
                 menu_id = "intanims_menu",
                 localized = false,
                 title = v.animation_state_machine_name,
-                desc = "Whether the animation with ID ".. tostring(name) .. " should be enabled",
-                value = InteractionAnimationsConfig._data.anims_enabled[name] ~= nil and InteractionAnimationsConfig._data.anims_enabled[name] or true,
+                desc = "Whether the animation with ID ".. name .. " should be enabled",
+                value = InteractionAnimationsConfig._data.anims_enabled[name] and true or false,
                 callback = "callback_disable_anim_".. name
             })
 
