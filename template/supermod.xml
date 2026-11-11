@@ -8,7 +8,7 @@
 	<tweak definition="scriptdata/animation_states.xml"/>
 	<tweak definition="scriptdata/animation_subset.xml"/>
 	
-	<hooks script_path="mod.lua">
+	<hooks script_path="interaction_animation_tweak_data.lua">
 		<post hook_id="lib/tweak_data/interactiontweakdata"/>
 	</hooks>
 	
